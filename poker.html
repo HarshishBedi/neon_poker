@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Two-Player Poker</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #2e3b4e;
+        color: white;
+      }
+      #game-container {
+        margin: 20px auto;
+        max-width: 600px;
+        padding: 20px;
+        border: 2px solid white;
+        border-radius: 10px;
+        background-color: #1a1a2e;
+      }
+      .player-area,
+      .community-area {
+        margin: 20px 0;
+      }
+      .player-area.active {
+        border: 2px solid yellow;
+        padding: 10px;
+      }
+      .card {
+        display: inline-block;
+        width: 50px;
+        height: 70px;
+        background-color: white;
+        color: black;
+        margin: 5px;
+        line-height: 70px;
+        font-size: 18px;
+        border-radius: 5px;
+        text-align: center;
+      }
+      button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #e94560;
+        color: white;
+      }
+      button:disabled {
+        background-color: gray;
+      }
+      .betting-section {
+        margin-top: 20px;
+      }
+      #showdown-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        color: black;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Two-Player Poker</h1>
+    <div id="game-container">
+      <div class="player-area" id="player1-area">
+        <h2>Player 1</h2>
+        <div id="player1-cards"></div>
+        <p>Chips: <span id="player1-chips">1000</span></p>
+      </div>
+      <div class="player-area" id="player2-area">
+        <h2>Player 2</h2>
+        <div id="player2-cards"></div>
+        <p>Chips: <span id="player2-chips">1000</span></p>
+      </div>
+      <div class="community-area">
+        <h2>Community Cards</h2>
+        <div id="community-cards"></div>
+      </div>
+      <div class="betting-section">
+        <h3>Current Pot: <span id="pot">0</span></h3>
+        <label
+          >Bet Amount: <input type="number" id="bet-amount" min="10" value="10"
+        /></label>
+        <button id="bet-button">Bet</button>
+        <button id="fold-button">Fold</button>
+      </div>
+    </div>
+    <div id="showdown-modal">
+      <h2 id="winner-message"></h2>
+      <button onclick="resetGame()">New Game</button>
+    </div>
+
+    <script>
+      const suits = ["♠", "♣", "♦", "♥"];
+      const values = [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K",
+        "A",
+      ];
+      let deck = [],
+        player1Cards = [],
+        player2Cards = [],
+        communityCards = [];
+      let player1Chips = 1000,
+        player2Chips = 1000,
+        pot = 0,
+        currentPlayer = 1;
+      let bettingRound = 0;
+
+      function createDeck() {
+        deck = [];
+        for (let suit of suits) {
+          for (let value of values) {
+            deck.push(`${value}${suit}`);
+          }
+        }
+        deck.sort(() => Math.random() - 0.5);
+      }
+
+      function dealCards() {
+        createDeck();
+        player1Cards = [deck.pop(), deck.pop()];
+        player2Cards = [deck.pop(), deck.pop()];
+        communityCards = [];
+        bettingRound = 0;
+        pot = 0;
+        updateDisplay();
+      }
+
+      function placeBet() {
+        let betAmount = parseInt(document.getElementById("bet-amount").value);
+        if (betAmount <= 0) return;
+        if (currentPlayer === 1 && betAmount <= player1Chips) {
+          player1Chips -= betAmount;
+          pot += betAmount;
+          currentPlayer = 2;
+        } else if (currentPlayer === 2 && betAmount <= player2Chips) {
+          player2Chips -= betAmount;
+          pot += betAmount;
+          currentPlayer = 1;
+        } else {
+          alert("Not enough chips!");
+          return;
+        }
+        if (player1Chips === player2Chips) revealCommunityCards();
+        updateDisplay();
+      }
+
+      function revealCommunityCards() {
+        if (player1Chips === player2Chips) {
+          if (bettingRound === 0)
+            communityCards.push(deck.pop(), deck.pop(), deck.pop());
+          else if (bettingRound === 1) communityCards.push(deck.pop());
+          else if (bettingRound === 2) communityCards.push(deck.pop());
+          else showDown();
+          bettingRound++;
+          currentPlayer = 1;
+          updateDisplay();
+        }
+      }
+
+      function showDown() {
+        document.getElementById("winner-message").innerText =
+          "Player " + (Math.random() > 0.5 ? "1" : "2") + " Wins!";
+        document.getElementById("showdown-modal").style.display = "block";
+      }
+
+      function updateDisplay() {
+        document
+          .getElementById("player1-area")
+          .classList.toggle("active", currentPlayer === 1);
+        document
+          .getElementById("player2-area")
+          .classList.toggle("active", currentPlayer === 2);
+        document.getElementById("player1-cards").innerHTML = player1Cards
+          .map((card) => `<div class='card'>${card}</div>`)
+          .join("");
+        document.getElementById("player2-cards").innerHTML = player2Cards
+          .map((card) => `<div class='card'>${card}</div>`)
+          .join("");
+        document.getElementById("community-cards").innerHTML = communityCards
+          .map((card) => `<div class='card'>${card}</div>`)
+          .join("");
+        document.getElementById("player1-chips").innerText = player1Chips;
+        document.getElementById("player2-chips").innerText = player2Chips;
+        document.getElementById("pot").innerText = pot;
+      }
+
+      dealCards();
+      document.getElementById("bet-button").addEventListener("click", placeBet);
+    </script>
+  </body>
+</html>
