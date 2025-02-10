@@ -1,194 +1,289 @@
-
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport" />
+    <meta
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+      name="viewport"
+    />
     <title>Generated Game</title>
     <style>
-      body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: 'Orbitron', sans-serif;
-            background-color: #1a1a2e;
-            color: #ffffff;
-        }
-        .screen {
-            display: none;
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        }
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Orbitron", sans-serif;
+        background-color: #1a1a2e;
+        color: #ffffff;
+      }
+      .screen {
+        display: none;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: linear-gradient(
+          135deg,
+          #1a1a2e 0%,
+          #16213e 50%,
+          #0f3460 100%
+        );
+      }
+      .screen.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .container {
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+      }
+      button {
+        background: linear-gradient(135deg, #283c86 0%, #45a247 100%);
+        border: 2px solid #fff;
+        border-radius: 8px;
+        color: #fff;
+        font-family: "Orbitron", sans-serif;
+        font-size: 18px;
+        text-transform: uppercase;
+        text-align: center;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        padding: 12px 30px;
+        margin: 20px auto 0;
+        display: block;
+        width: 215.15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        background: linear-gradient(135deg, #45a247 0%, #283c86 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+      #game-title {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        color: #e94560;
+      }
+      #game-controls {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(26, 26, 46, 0.8);
+        padding: 10px 0; /* Changed padding */
+        z-index: 101;
+        display: none;
+        text-align: center; /* Center align the content */
+      }
+      #game-controls button {
+        display: inline-block;
+        width: auto;
+        padding: 8px 15px;
+        margin: 0 5px; /* Reduced side margins */
+        font-size: 14px;
+      }
+      #hud {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #1a1a2e;
+        padding: 10px;
+        z-index: 100;
+        display: none;
+        font-family: "Orbitron", sans-serif;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      #game-container {
+        position: relative;
+        width: 100%;
+        height: calc(100% - 100px);
+        overflow: hidden;
+        background-color: #0f3460;
+        border: 2px solid #e94560;
+        box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+      }
+      #game-screen {
+        background: none;
+      }
+      #instructions-screen {
+        z-index: 200;
+      }
+      #instructions-screen.overlay {
+        background: rgba(0, 0, 0, 0.8);
+      }
+      #instructions-screen .container {
+        background: #1a1a2e;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+      }
+      @media (max-width: 600px) {
+        #game-title {
+          font-size: 2em;
         }
         button {
-            background: linear-gradient(135deg, #283c86 0%, #45a247 100%);
-            border: 2px solid #fff;
-            border-radius: 8px;
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            text-transform: uppercase;
-            text-align: center;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-            padding: 12px 30px;
-            margin: 20px auto 0;
-            display: block;
-            width: 215.15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            background: linear-gradient(135deg, #45a247 0%, #283c86 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-        #game-title {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            color: #e94560;
-        }
-        #game-controls {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(26, 26, 46, 0.8);
-            padding: 10px 0; /* Changed padding */
-            z-index: 101;
-            display: none;
-            text-align: center; /* Center align the content */
+          width: 80%;
+          font-size: 16px;
         }
         #game-controls button {
-            display: inline-block;
-            width: auto;
-            padding: 8px 15px;
-            margin: 0 5px; /* Reduced side margins */
-            font-size: 14px;
+          font-size: 12px;
+          padding: 6px 12px;
         }
-        #hud {
-            position: fixed;
-            top: 50px;
-            left: 0;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #1a1a2e;
-            padding: 10px;
-            z-index: 100;
-            display: none;
-            font-family: 'Orbitron', sans-serif;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        #game-container {
-            position: relative;
-            width: 100%;
-            height: calc(100% - 100px);
-            overflow: hidden;
-            background-color: #0f3460;
-            border: 2px solid #e94560;
-            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
-        }
-        #game-screen {
-            background: none;
-        }
-        #instructions-screen {
-            z-index: 200;
-        }
-        #instructions-screen.overlay {
-            background: rgba(0, 0, 0, 0.8);
-        }
-        #instructions-screen .container {
-            background: #1a1a2e;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
-        }
-        @media (max-width: 600px) {
-            #game-title {
-                font-size: 2em;
-            }
-            button {
-                width: 80%;
-                font-size: 16px;
-            }
-            #game-controls button {
-                font-size: 12px;
-                padding: 6px 12px;
-            }
-        }
-		
-		
+      }
+    </style>
+    <style>
+      #game-container {
+        margin: 20px auto;
+        max-width: 600px;
+        padding: 20px;
+        border: 2px solid white;
+        border-radius: 10px;
+        background-color: #1a1a2e;
+
+        margin-top: 100px;
+        overflow: auto;
+      }
+      .player-area,
+      .community-area {
+        margin: 20px 0;
+      }
+      .player-area.active {
+        border: 2px solid yellow;
+        padding: 10px;
+      }
+      .card {
+        display: inline-block;
+        width: 50px;
+        height: 70px;
+        background-color: white;
+        color: black;
+        margin: 5px;
+        line-height: 70px;
+        font-size: 18px;
+        border-radius: 5px;
+        text-align: center;
+      }
+      button {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #e94560;
+        color: white;
+      }
+      button:disabled {
+        background-color: gray;
+      }
+      .betting-section {
+        margin-top: 20px;
+      }
+      #showdown-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        color: black;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      }
     </style>
   </head>
   <body>
     <div id="game-controls">
-        <button id="game-menu-button">Menu</button>
-        <button id="game-restart-button">Restart</button>
-        <button id="game-instructions-button">Instructions</button>
+      <button id="game-menu-button">Menu</button>
+      <button id="game-restart-button">Restart</button>
+      <button id="game-instructions-button">Instructions</button>
     </div>
-	<!-- Use HUD for Score, High Score, and Other Game Information -->
+    <!-- Use HUD for Score, High Score, and Other Game Information -->
     <div id="hud"></div>
 
     <div id="start-menu-screen" class="active screen">
-        <div class="container">
-            <h1 id="game-title">Your Game Title</h1>
-            <button id="play-button">Play</button>
-            <button id="settings-button">Settings</button>
-            <button id="instructions-button">Instructions</button>
-        </div>
+      <div class="container">
+        <h1 id="game-title">Your Game Title</h1>
+        <button id="play-button">Play</button>
+        <button id="settings-button">Settings</button>
+        <button id="instructions-button">Instructions</button>
+      </div>
     </div>
 
     <div id="settings-screen" class="screen">
-        <div class="container">
-            <h2>Settings</h2>
-            <!-- Add settings options here -->
-            <button id="settings-back-button">Back</button>
-        </div>
+      <div class="container">
+        <h2>Settings</h2>
+        <!-- Add settings options here -->
+        <button id="settings-back-button">Back</button>
+      </div>
     </div>
 
     <div id="instructions-screen" class="screen">
-        <div class="container">
-            <h2>Instructions</h2>
-            <h3>How to Play:</h3>
-            <ul>
-                <li>Instruction 1</li>
-                <li>Instruction 2</li>
-            </ul>
-            <h3>Controls:</h3>
-            <ul>
-                <li>Control 1</li>
-                <li>Control 2</li>
-            </ul>
-            <button id="instructions-back-button">Back</button>
-        </div>
+      <div class="container">
+        <h2>Instructions</h2>
+        <h3>How to Play:</h3>
+        <ul>
+          <li>Instruction 1</li>
+          <li>Instruction 2</li>
+        </ul>
+        <h3>Controls:</h3>
+        <ul>
+          <li>Control 1</li>
+          <li>Control 2</li>
+        </ul>
+        <button id="instructions-back-button">Back</button>
+      </div>
     </div>
 
     <div id="game-screen" class="screen">
-        <div id="game-container"></div>
+      <div id="game-container">
+        <div class="player-area" id="player1-area">
+          <h2>Player 1</h2>
+          <div id="player1-cards"></div>
+          <p>Chips: <span id="player1-chips">1000</span></p>
+        </div>
+        <div class="player-area" id="player2-area">
+          <h2>Player 2</h2>
+          <div id="player2-cards"></div>
+          <p>Chips: <span id="player2-chips">1000</span></p>
+        </div>
+        <div class="community-area">
+          <h2>Community Cards</h2>
+          <div id="community-cards"></div>
+        </div>
+        <div class="betting-section">
+          <h3>Current Pot: <span id="pot">0</span></h3>
+          <label
+            >Bet Amount:
+            <input type="number" id="bet-amount" min="10" value="10"
+          /></label>
+          <button id="bet-button">Bet</button>
+          <button id="fold-button">Fold</button>
+        </div>
+      </div>
+      <div id="showdown-modal">
+        <h2 id="winner-message"></h2>
+        <button onclick="resetGame()">New Game</button>
+      </div>
     </div>
 
     <div id="game-over-screen" class="screen">
-        <div class="container">
-            <div id="game-over-message"></div>
-            <button id="play-again-button">Play Again</button>
-            <button id="main-menu-button">Main Menu</button>
-        </div>
+      <div class="container">
+        <div id="game-over-message"></div>
+        <button id="play-again-button">Play Again</button>
+        <button id="main-menu-button">Main Menu</button>
+      </div>
     </div>
     <audio autoplay="" id="background-music" loop="">
       <source src="background-music.mp3" type="audio/mpeg" />
@@ -197,75 +292,74 @@
       <source src="start-game-sound.mp3" type="audio/mpeg" />
     </audio>
     <!--Extra audio tags for sound effects-->
-	
-	<!--You will create your own scripts in the following files-->    
+
+    <!--You will create your own scripts in the following files-->
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener("DOMContentLoaded", () => {
         class GameUI {
           constructor() {
-            this.startMenuScreen = document.getElementById('start-menu-screen');
-            this.settingsScreen = document.getElementById('settings-screen');
-            this.instructionsScreen = document.getElementById('instructions-screen');
-            this.gameContainer = document.getElementById('game-screen');
-            this.gameOverScreen = document.getElementById('game-over-screen');
-			this.gameControls = document.getElementById('game-controls');
-			this.hud = document.getElementById('hud');
-          };
-		  
-		  
+            this.startMenuScreen = document.getElementById("start-menu-screen");
+            this.settingsScreen = document.getElementById("settings-screen");
+            this.instructionsScreen = document.getElementById(
+              "instructions-screen"
+            );
+            this.gameContainer = document.getElementById("game-screen");
+            this.gameOverScreen = document.getElementById("game-over-screen");
+            this.gameControls = document.getElementById("game-controls");
+            this.hud = document.getElementById("hud");
+          }
+
           swapToScreen(screen) {
-            this.startMenuScreen.classList.remove('active');
-            this.settingsScreen.classList.remove('active');
-            this.instructionsScreen.classList.remove('active');
-            this.gameContainer.classList.remove('active');
-            this.gameOverScreen.classList.remove('active');
-            screen.classList.add('active');			
-			
-			if (screen.id === 'game-screen') {
-				this.hud.style.display = 'block';
-				this.gameControls.style.display = 'block';
-			} else {
-				this.hud.style.display = 'none';
-				this.gameControls.style.display = 'none';
-			}
-          };
-		  
+            this.startMenuScreen.classList.remove("active");
+            this.settingsScreen.classList.remove("active");
+            this.instructionsScreen.classList.remove("active");
+            this.gameContainer.classList.remove("active");
+            this.gameOverScreen.classList.remove("active");
+            screen.classList.add("active");
+
+            if (screen.id === "game-screen") {
+              this.hud.style.display = "block";
+              this.gameControls.style.display = "block";
+            } else {
+              this.hud.style.display = "none";
+              this.gameControls.style.display = "none";
+            }
+          }
+
           startGame() {
-            const startGameSound = document.getElementById('start-game-sound');
+            const startGameSound = document.getElementById("start-game-sound");
             this.swapToScreen(this.gameContainer);
             startGameSound.play();
             // Your start game code here;
           }
-		  
+
           endGame() {
-            const endGameSound = document.getElementById('end-game-sound');
+            const endGameSound = document.getElementById("end-game-sound");
             this.swapToScreen(this.gameOverScreen);
             endGameSound.play();
             // Your end game code here;
           }
-		  
+
           mainMenu() {
             this.swapToScreen(this.startMenuScreen);
           }
-		  
+
           playAgain() {
             this.swapToScreen(this.gameContainer);
           }
-		  
+
           settings() {
             this.swapToScreen(this.settingsScreen);
           }
-		  
+
           instructions() {
             this.swapToScreen(this.instructionsScreen);
-          }		  
-          
+          }
+
           // Your UI functions here;
-		  
         }
         class GameLogic {
-          constructor() {
-          }
+          constructor() {}
           // Your game logic here;
         }
         class Game {
@@ -275,43 +369,44 @@
             this.lastFrameTime = 0;
             this.updateInterval = 1000 / 60;
             this.done = false;
-			this.isPaused = false;
-			this.animationFrameId = null;
+            this.isPaused = false;
+            this.animationFrameId = null;
           }
           prepareGame() {
-            const gameContainer = document.getElementById('game-screen');
-            // Prepare game container DOM elements here;            
+            const gameContainer = document.getElementById("game-screen");
+            // Prepare game container DOM elements here;
             // Connect DOM element to game logic or game ui accordingly;
             this.assignButtons();
           }
           startGame() {
             this.ui.startGame();
             // Start game logic here;
-            
+
             // this.updateInterval = /* Your desired update interval */;
-            
-			if(this.animationFrameId)
-			{
-				cancelAnimationFrame(this.animationFrameId);
-			}
-			this.animationFrameId = requestAnimationFrame(this.gameLoop.bind(this));
+
+            if (this.animationFrameId) {
+              cancelAnimationFrame(this.animationFrameId);
+            }
+            this.animationFrameId = requestAnimationFrame(
+              this.gameLoop.bind(this)
+            );
           }
           updateGame() {
             // Update game logic here;
           }
           resetGame() {
-            // Reset game logic here;			
-			this.isPaused = false;
-			cancelAnimationFrame(this.animationFrameId);
+            // Reset game logic here;
+            this.isPaused = false;
+            cancelAnimationFrame(this.animationFrameId);
           }
-		  pause() {
-			this.isPaused = true;
-			cancelAnimationFrame(this.animationFrameId);
-		  }
-		  resume() {
-			this.isPaused = false;
-			this.gameLoop();
-		  }
+          pause() {
+            this.isPaused = true;
+            cancelAnimationFrame(this.animationFrameId);
+          }
+          resume() {
+            this.isPaused = false;
+            this.gameLoop();
+          }
           gameLoop(timestamp) {
             if (this.done) return;
             const deltaTime = timestamp - this.lastFrameTime;
@@ -319,48 +414,316 @@
               this.updateGame();
               this.lastFrameTime = timestamp;
             }
-            if(this.animationFrameId)
-			{
-				cancelAnimationFrame(this.animationFrameId);
-			}
-			this.animationFrameId = requestAnimationFrame(this.gameLoop.bind(this));
+            if (this.animationFrameId) {
+              cancelAnimationFrame(this.animationFrameId);
+            }
+            this.animationFrameId = requestAnimationFrame(
+              this.gameLoop.bind(this)
+            );
           }
           assignButtons() {
-            const playButton = document.getElementById('play-button');
-			const settingsButton = document.getElementById('settings-button');
-			const instructionsButton = document.getElementById('instructions-button');
-			const playAgainButton = document.getElementById('play-again-button');
-			const mainMenuButtons = document.querySelectorAll('#game-over-main-menu-button, #settings-back-button, #instructions-back-button');
-			const gameMenuButton = document.getElementById('game-menu-button');
-			const gameRestartButton = document.getElementById('game-restart-button');
-			const gameInstructionsButton = document.getElementById('game-instructions-button');
+            const playButton = document.getElementById("play-button");
+            const settingsButton = document.getElementById("settings-button");
+            const instructionsButton = document.getElementById(
+              "instructions-button"
+            );
+            const playAgainButton =
+              document.getElementById("play-again-button");
+            const mainMenuButtons = document.querySelectorAll(
+              "#game-over-main-menu-button, #settings-back-button, #instructions-back-button"
+            );
+            const gameMenuButton = document.getElementById("game-menu-button");
+            const gameRestartButton = document.getElementById(
+              "game-restart-button"
+            );
+            const gameInstructionsButton = document.getElementById(
+              "game-instructions-button"
+            );
 
-			playButton.addEventListener('click', this.startGame.bind(this));
-			settingsButton.addEventListener('click', this.ui.settings.bind(this.ui));
-			instructionsButton.addEventListener('click', this.ui.instructions.bind(this.ui));
-			playAgainButton.addEventListener('click', this.startGame.bind(this));
-			mainMenuButtons.forEach(button => button.addEventListener('click', () => {
-				this.ui.mainMenu();
-			}));
-			gameMenuButton.addEventListener('click', () => {
-				this.ui.mainMenu();
-			});
-			gameRestartButton.addEventListener('click', this.startGame.bind(this));
-			gameInstructionsButton.addEventListener('click', () => {
-						this.pause();						
-						this.ui.swapToScreen(this.ui.instructionsScreen);
-						document.getElementById('instructions-back-button').addEventListener('click', () => {
-							this.ui.swapToScreen(this.ui.gameContainer);
-							this.resume();
-						}, { once: true });
-					});
-            
-			// Your button event listeners here
+            playButton.addEventListener("click", this.startGame.bind(this));
+            settingsButton.addEventListener(
+              "click",
+              this.ui.settings.bind(this.ui)
+            );
+            instructionsButton.addEventListener(
+              "click",
+              this.ui.instructions.bind(this.ui)
+            );
+            playAgainButton.addEventListener(
+              "click",
+              this.startGame.bind(this)
+            );
+            mainMenuButtons.forEach((button) =>
+              button.addEventListener("click", () => {
+                this.ui.mainMenu();
+              })
+            );
+            gameMenuButton.addEventListener("click", () => {
+              this.ui.mainMenu();
+            });
+            gameRestartButton.addEventListener(
+              "click",
+              this.startGame.bind(this)
+            );
+            gameInstructionsButton.addEventListener("click", () => {
+              this.pause();
+              this.ui.swapToScreen(this.ui.instructionsScreen);
+              document
+                .getElementById("instructions-back-button")
+                .addEventListener(
+                  "click",
+                  () => {
+                    this.ui.swapToScreen(this.ui.gameContainer);
+                    this.resume();
+                  },
+                  { once: true }
+                );
+            });
+
+            // Your button event listeners here
           }
         }
         const game = new Game();
         game.prepareGame();
       });
+    </script>
+
+    <script>
+      const suits = ["♠", "♣", "♦", "♥"];
+      const values = [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "J",
+        "Q",
+        "K",
+        "A",
+      ];
+      let deck = [],
+        player1Cards = [],
+        player2Cards = [],
+        communityCards = [];
+      let player1Chips = 1000,
+        player2Chips = 1000,
+        pot = 0,
+        currentPlayer = 1;
+      let bettingRound = 0;
+
+      function resetGame() {
+        document.getElementById("showdown-modal").style.display = "none";
+        player1Chips = 1000;
+        player2Chips = 1000;
+        pot = 0;
+        currentPlayer = 1;
+        dealCards();
+      }
+
+      function createDeck() {
+        deck = [];
+        for (let suit of suits) {
+          for (let value of values) {
+            deck.push(`${value}${suit}`);
+          }
+        }
+        deck.sort(() => Math.random() - 0.5);
+      }
+
+      function dealCards() {
+        createDeck();
+        player1Cards = [deck.pop(), deck.pop()];
+        player2Cards = [deck.pop(), deck.pop()];
+        communityCards = [];
+        bettingRound = 0;
+        pot = 0;
+        updateDisplay();
+      }
+
+      function placeBet() {
+        let betAmount = parseInt(document.getElementById("bet-amount").value);
+        if (betAmount <= 0) return;
+        if (currentPlayer === 1 && betAmount <= player1Chips) {
+          player1Chips -= betAmount;
+          pot += betAmount;
+          currentPlayer = 2;
+        } else if (currentPlayer === 2 && betAmount <= player2Chips) {
+          player2Chips -= betAmount;
+          pot += betAmount;
+          currentPlayer = 1;
+        } else {
+          alert("Not enough chips!");
+          return;
+        }
+        if (player1Chips === player2Chips) revealCommunityCards();
+        updateDisplay();
+      }
+
+      function revealCommunityCards() {
+        if (player1Chips === player2Chips) {
+          if (bettingRound === 0)
+            communityCards.push(deck.pop(), deck.pop(), deck.pop());
+          else if (bettingRound === 1) communityCards.push(deck.pop());
+          else if (bettingRound === 2) communityCards.push(deck.pop());
+          else showDown();
+          bettingRound++;
+          currentPlayer = 1;
+          updateDisplay();
+        }
+      }
+
+      function getHandRank(cards) {
+        let values = cards.map((card) => card.slice(0, -1));
+        let suits = cards.map((card) => card.slice(-1));
+        let valueCounts = {};
+        let suitCounts = {};
+
+        values.forEach((v) => (valueCounts[v] = (valueCounts[v] || 0) + 1));
+        suits.forEach((s) => (suitCounts[s] = (suitCounts[s] || 0) + 1));
+
+        let sortedValues = Object.keys(valueCounts).sort(
+          (a, b) => values.indexOf(b) - values.indexOf(a)
+        );
+        let sortedCounts = Object.entries(valueCounts).sort(
+          (a, b) => b[1] - a[1] || values.indexOf(b[0]) - values.indexOf(a[0])
+        );
+
+        let isFlush = Object.values(suitCounts).some((count) => count >= 5);
+        let isStraight = checkStraight(sortedValues);
+
+        if (isFlush && isStraight)
+          return { rank: 8, name: `Straight Flush (${sortedValues[0]} high)` };
+        if (sortedCounts[0][1] === 4)
+          return { rank: 7, name: `Four of a Kind (${sortedCounts[0][0]})` };
+        if (sortedCounts[0][1] === 3 && sortedCounts[1][1] === 2)
+          return {
+            rank: 6,
+            name: `Full House (${sortedCounts[0][0]} over ${sortedCounts[1][0]})`,
+          };
+        if (isFlush)
+          return { rank: 5, name: `Flush (${sortedValues[0]} high)` };
+        if (isStraight)
+          return { rank: 4, name: `Straight (${sortedValues[0]} high)` };
+        if (sortedCounts[0][1] === 3)
+          return { rank: 3, name: `Three of a Kind (${sortedCounts[0][0]})` };
+        if (sortedCounts[0][1] === 2 && sortedCounts[1][1] === 2)
+          return {
+            rank: 2,
+            name: `Two Pair (${sortedCounts[0][0]} and ${sortedCounts[1][0]})`,
+          };
+        if (sortedCounts[0][1] === 2)
+          return { rank: 1, name: `One Pair (${sortedCounts[0][0]})` };
+
+        return { rank: 0, name: `High Card (${sortedValues[0]})` };
+      }
+
+      function compareSameRankHands(hand1Values, hand2Values) {
+        for (let i = 0; i < hand1Values.length; i++) {
+          if (hand1Values[i] !== hand2Values[i]) {
+            return hand1Values[i] > hand2Values[i] ? 1 : -1;
+          }
+        }
+        return 0;
+      }
+
+      function showDown() {
+        let player1Hand = [...player1Cards, ...communityCards];
+        let player2Hand = [...player2Cards, ...communityCards];
+
+        let player1BestHand = getHandRank(player1Hand);
+        let player2BestHand = getHandRank(player2Hand);
+
+        let winnerMessage;
+        if (player1BestHand.rank > player2BestHand.rank) {
+          winnerMessage = `Player 1 Wins with ${player1BestHand.name}!`;
+          player1Chips += pot;
+        } else if (player2BestHand.rank > player1BestHand.rank) {
+          winnerMessage = `Player 2 Wins with ${player2BestHand.name}!`;
+          player2Chips += pot;
+        } else {
+          let comparison = compareSameRankHands(
+            player1BestHand.name,
+            player2BestHand.name
+          );
+          if (comparison > 0) {
+            winnerMessage = `Player 1 Wins with ${player1BestHand.name} (${player1BestHand.name} higher)!`;
+            player1Chips += pot;
+          } else if (comparison < 0) {
+            winnerMessage = `Player 2 Wins with ${player2BestHand.name} (${player2BestHand.name} higher)!`;
+            player2Chips += pot;
+          } else {
+            winnerMessage = `It's a tie with ${player1BestHand.name}!`;
+            player1Chips += pot / 2;
+            player2Chips += pot / 2;
+          }
+        }
+
+        document.getElementById("winner-message").innerText = winnerMessage;
+        document.getElementById("showdown-modal").style.display = "block";
+      }
+
+      function checkStraight(values) {
+        let indexMap = {
+          2: 0,
+          3: 1,
+          4: 2,
+          5: 3,
+          6: 4,
+          7: 5,
+          8: 6,
+          9: 7,
+          10: 8,
+          J: 9,
+          Q: 10,
+          K: 11,
+          A: 12,
+        };
+        let indexValues = values.map((v) => indexMap[v]).sort((a, b) => a - b);
+        let count = 1;
+        for (let i = 1; i < indexValues.length; i++) {
+          if (indexValues[i] === indexValues[i - 1] + 1) count++;
+          else if (indexValues[i] !== indexValues[i - 1]) count = 1;
+          if (count >= 5) return true;
+        }
+        return false;
+      }
+
+      function compareSameRankHands(hand1, hand2) {
+        for (let i = 0; i < hand1.length; i++) {
+          if (hand1[i] !== hand2[i]) {
+            return hand1[i] > hand2[i] ? 1 : -1;
+          }
+        }
+        return 0;
+      }
+
+      function updateDisplay() {
+        document
+          .getElementById("player1-area")
+          .classList.toggle("active", currentPlayer === 1);
+        document
+          .getElementById("player2-area")
+          .classList.toggle("active", currentPlayer === 2);
+        document.getElementById("player1-cards").innerHTML = player1Cards
+          .map((card) => `<div class='card'>${card}</div>`)
+          .join("");
+        document.getElementById("player2-cards").innerHTML = player2Cards
+          .map((card) => `<div class='card'>${card}</div>`)
+          .join("");
+        document.getElementById("community-cards").innerHTML = communityCards
+          .map((card) => `<div class='card'>${card}</div>`)
+          .join("");
+        document.getElementById("player1-chips").innerText = player1Chips;
+        document.getElementById("player2-chips").innerText = player2Chips;
+        document.getElementById("pot").innerText = pot;
+      }
+
+      dealCards();
+      document.getElementById("bet-button").addEventListener("click", placeBet);
     </script>
   </body>
 </html>
