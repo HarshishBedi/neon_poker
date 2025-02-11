@@ -222,6 +222,9 @@ let bettingRound = 0;
 let lastWinner = null;
 let player1TotalBet = 0;
 let player2TotalBet = 0;
+let smallBlind = 10;
+let bigBlind = 20;
+let dealer = 1; // Keeps track of the dealer (1 or 2)
 let betTimer = null; // Store the countdown timer
 
 function resetGame() {
@@ -243,16 +246,74 @@ function resetGame() {
 
 function playAgain() {
     document.getElementById("showdown-modal").style.display = "none";
-    player1Cards = []
-    player2Cards = []
-    communityCards = []
-    bettingRound = 0
+    player1Cards = [];
+    player2Cards = [];
+    communityCards = [];
+    bettingRound = 0;
     player1TotalBet = 0;
     player2TotalBet = 0;
     pot = 0;
-    betTimer = null; // Store the countdown timer
+    betTimer = null;
     currentPlayer = 1;
+
+    // Swap dealer each round
+    dealer = dealer === 1 ? 2 : 1;
+
     dealCards();
+}
+
+function assignBlinds() {
+    if (dealer === 1) {
+        player1Chips -= smallBlind;
+        player2Chips -= bigBlind;
+        player1TotalBet = smallBlind;
+        player2TotalBet = bigBlind;
+        currentPlayer = 1; // Small blind acts first
+    } else {
+        player2Chips -= smallBlind;
+        player1Chips -= bigBlind;
+        player2TotalBet = smallBlind;
+        player1TotalBet = bigBlind;
+        currentPlayer = 2; // Small blind acts first
+    }
+
+    pot = smallBlind + bigBlind;
+    updateBlindsUI();
+    updateDisplay();
+}
+
+function fold() {
+    const winner = currentPlayer === 1 ? "Player 2" : "Player 1";
+    if (currentPlayer === 1) {
+        player2Chips += pot;
+    } else {
+        player1Chips += pot;
+    }
+
+    document.getElementById("winner-message").innerText = `${winner} wins by fold!`;
+    document.getElementById("showdown-modal").style.display = "block";
+
+    setTimeout(() => {
+        playAgain(); // Start the next round
+    }, 2000);
+}
+
+document.getElementById("fold-button").addEventListener("click", fold);
+
+function updateBlindsUI() {
+    document.querySelectorAll(".blind-icon").forEach(el => el.remove());
+
+    const bigBlindPlayer = dealer === 1 ? "player2-area-header" : "player1-area-header";
+
+    let bigBlindIcon = document.createElement("img");
+    bigBlindIcon.className = "blind-icon big-blind";
+    bigBlindIcon.height = 20
+    bigBlindIcon.width = 20
+    bigBlindIcon.style.marginLeft = "10px"
+    bigBlindIcon.src = "./assets/dealer-button.png"; // Same image for BB
+    bigBlindIcon.alt = "BB"; // Alternative text
+
+    document.getElementById(bigBlindPlayer).appendChild(bigBlindIcon);
 }
 
 function createDeck() {
@@ -267,6 +328,7 @@ function createDeck() {
 
 function dealCards() {
     createDeck();
+    assignBlinds();
     player1Cards = [deck.pop(), deck.pop()];
     player2Cards = [deck.pop(), deck.pop()];
     communityCards = [];
