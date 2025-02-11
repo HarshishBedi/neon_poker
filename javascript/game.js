@@ -219,12 +219,38 @@ let player1Chips = 1000,
     pot = 0,
     currentPlayer = 1;
 let bettingRound = 0;
+let lastWinner = null;
+let player1TotalBet = 0;
+let player2TotalBet = 0;
+let betTimer = null; // Store the countdown timer
 
 function resetGame() {
     document.getElementById("showdown-modal").style.display = "none";
     player1Chips = 1000;
     player2Chips = 1000;
+    player1Cards = []
+    player2Cards = []
+    communityCards = []
+    bettingRound = 0
+    player1TotalBet = 0;
+    player2TotalBet = 0;
+    betTimer = null; // Store the countdown timer
     pot = 0;
+    currentPlayer = 1;
+    deck = []
+    dealCards();
+}
+
+function playAgain() {
+    document.getElementById("showdown-modal").style.display = "none";
+    player1Cards = []
+    player2Cards = []
+    communityCards = []
+    bettingRound = 0
+    player1TotalBet = 0;
+    player2TotalBet = 0;
+    pot = 0;
+    betTimer = null; // Store the countdown timer
     currentPlayer = 1;
     dealCards();
 }
@@ -249,27 +275,35 @@ function dealCards() {
     updateDisplay();
 }
 
-let betTimer; // Store the countdown timer
 const betTimeLimit = 10; // Time limit in seconds
 
 function placeBet() {
     clearTimeout(betTimer); // Clear previous timer
-    const callButtonValue = document.getElementById("call-button").getAttribute('value')
+    const callButtonValue = document.getElementById("call-button").getAttribute('value');
     let betAmount = callButtonValue.toUpperCase() === 'ALL-IN' ? (currentPlayer === 1 ? player1Chips : player2Chips) : parseInt(callButtonValue.replace('$', ''));
+
     if (betAmount <= 0) return;
+
     if (currentPlayer === 1 && betAmount <= player1Chips) {
         player1Chips -= betAmount;
+        player1TotalBet += betAmount; // Track Player 1's bet amount
         pot += betAmount;
         currentPlayer = 2;
     } else if (currentPlayer === 2 && betAmount <= player2Chips) {
         player2Chips -= betAmount;
+        player2TotalBet += betAmount; // Track Player 2's bet amount
         pot += betAmount;
         currentPlayer = 1;
     } else {
         alert("Not enough chips!");
         return;
     }
-    if (player1Chips === player2Chips) revealCommunityCards();
+
+    // Check if both players have matched the total bet amount before revealing community cards
+    if (player1TotalBet === player2TotalBet) {
+        revealCommunityCards();
+    }
+
     updateDisplay();
 
     // Start a new timer for the next player
@@ -310,16 +344,14 @@ function endGame() {
 }
 
 function revealCommunityCards() {
-    if (player1Chips === player2Chips) {
-        if (bettingRound === 0)
-            communityCards.push(deck.pop(), deck.pop(), deck.pop());
-        else if (bettingRound === 1) communityCards.push(deck.pop());
-        else if (bettingRound === 2) communityCards.push(deck.pop());
-        else showDown();
-        bettingRound++;
-        currentPlayer = 1;
-        updateDisplay();
-    }
+    if (bettingRound === 0)
+        communityCards.push(deck.pop(), deck.pop(), deck.pop());
+    else if (bettingRound === 1) communityCards.push(deck.pop());
+    else if (bettingRound === 2) communityCards.push(deck.pop());
+    else showDown();
+    bettingRound++;
+    currentPlayer = 1;
+    updateDisplay();
 }
 
 function convertCards(cards) {
@@ -343,19 +375,31 @@ function showDown() {
 
     const hand1 = Hand.solve(player1Hand);
     const hand2 = Hand.solve(player2Hand);
+    let winnerMessage = "";
 
     if (hand1.loseTo(hand2)) {
-        winnerMessage = `Player 2 Wins (${hand2.descr})!`
+        winnerMessage = `Player 2 Wins (${hand2.descr})!`;
+        player2Chips += pot; // Award the pot to Player 2
+        lastWinner = 2;
     }
     if (hand2.loseTo(hand1)) {
-        winnerMessage = `Player 1 Wins (${hand1.descr})!`
+        winnerMessage = `Player 1 Wins (${hand1.descr})!`;
+        player1Chips += pot; // Award the pot to Player 1
+        lastWinner = 1;
     }
     if (hand1.loseTo(hand2) === hand2.loseTo(hand1)) {
-        winnerMessage = `It's a tie (${hand1.descr})!`
+        winnerMessage = `It's a tie (${hand1.descr})!`;
+        player1Chips += pot / 2; // Split the pot
+        player2Chips += pot / 2;
+        lastWinner = "tie"; // No single winner
     }
 
     document.getElementById("winner-message").innerText = winnerMessage;
     document.getElementById("showdown-modal").style.display = "block";
+
+    // Reset the pot after awarding chips
+    pot = 0;
+    updateDisplay();
 }
 
 function updateDisplay() {
@@ -399,6 +443,7 @@ function updateDisplay() {
 
     const player1CardsHTML = player1Cards.map((card) => getCardImage(card)).join("");
     const player2CardsHTML = player2Cards.map((card) => getCardImage(card)).join("");
+
 
     // Handle community cards with dot separators
     let communityCardsHTML = "";

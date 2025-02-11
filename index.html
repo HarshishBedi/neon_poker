@@ -43,17 +43,44 @@
 
       <div id="instructions-screen" class="screen">
         <div class="container">
-          <h2>Instructions</h2>
+          <h2>Neon Poker Instructions</h2>
+
           <h3>How to Play:</h3>
           <ul>
-            <li>Instruction 1</li>
-            <li>Instruction 2</li>
+            <li>Played with 2-6 players.</li>
+            <li>Each player gets 2 hole cards and 1 unique AI card.</li>
+            <li>Four betting rounds: Pre-Flop, Flop, Turn, and River.</li>
+            <li>Five community cards revealed gradually.</li>
+            <li>Best five-card poker hand wins the round.</li>
           </ul>
-          <h3>Controls:</h3>
+
+          <h3>AI Card Abilities:</h3>
           <ul>
-            <li>Control 1</li>
-            <li>Control 2</li>
+            <li>
+              <strong>Neural Bluff:</strong> Forces an opponent to reveal a hole
+              card.
+            </li>
+            <li>
+              <strong>Quantum Swap:</strong> Swap one hole card with the top of
+              the deck.
+            </li>
+            <li>
+              <strong>Glitch the River:</strong> Change the final community
+              card.
+            </li>
+            <li>
+              <strong>Predictive Bet:</strong> AI suggests bets based on
+              patterns.
+            </li>
           </ul>
+
+          <h3>Game Features:</h3>
+          <ul>
+            <li>Futuristic cyberpunk visuals and glitch effects.</li>
+            <li>AI-powered strategy for mind games and unique plays.</li>
+            <li>Unpredictable rounds with one-time-use AI abilities.</li>
+          </ul>
+
           <button id="instructions-back-button">Back</button>
         </div>
       </div>
@@ -110,6 +137,7 @@
         </div>
         <div id="showdown-modal">
           <h2 id="winner-message"></h2>
+          <button onclick="playAgain()">Play Again</button>
           <button onclick="resetGame()">New Game</button>
         </div>
       </div>
