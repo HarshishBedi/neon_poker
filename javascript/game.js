@@ -287,7 +287,6 @@ function startBettingTimer() {
             clearTimeout(betTimer);
             handleBetTimeout();
         } else {
-            console.log(`Player ${currentPlayer} has ${timeLeft} seconds left to bet.`);
             timeLeft--;
             betTimer = setTimeout(countdown, 1000);
         }
@@ -325,129 +324,40 @@ function revealCommunityCards() {
     }
 }
 
-function getHandRank(cards) {
-    let values = cards.map((card) => card.slice(0, -1));
-    let suits = cards.map((card) => card.slice(-1));
-    let valueCounts = {};
-    let suitCounts = {};
+function convertCards(cards) {
+    const suitMap = { '♥': 'h', '♦': 'd', '♠': 's', '♣': 'c' };
 
-    values.forEach((v) => (valueCounts[v] = (valueCounts[v] || 0) + 1));
-    suits.forEach((s) => (suitCounts[s] = (suitCounts[s] || 0) + 1));
+    const converted = cards.map(card => {
+        let rank = card.slice(0, -1); // Get the rank
+        let suit = suitMap[card.slice(-1)]; // Convert suit
 
-    let sortedValues = Object.keys(valueCounts).sort(
-        (a, b) => values.indexOf(b) - values.indexOf(a)
-    );
-    let sortedCounts = Object.entries(valueCounts).sort(
-        (a, b) => b[1] - a[1] || values.indexOf(b[0]) - values.indexOf(a[0])
-    );
+        if (rank === "10") rank = "T"; // Replace 10 with T
 
-    let isFlush = Object.values(suitCounts).some((count) => count >= 5);
-    let isStraight = checkStraight(sortedValues);
+        return `${rank}${suit}`;
+    });
 
-    if (isFlush && isStraight)
-        return { rank: 8, name: `Straight Flush (${sortedValues[0]} high)` };
-    if (sortedCounts[0][1] === 4)
-        return { rank: 7, name: `Four of a Kind (${sortedCounts[0][0]})` };
-    if (sortedCounts[0][1] === 3 && sortedCounts[1][1] === 2)
-        return {
-            rank: 6,
-            name: `Full House (${sortedCounts[0][0]} over ${sortedCounts[1][0]})`,
-        };
-    if (isFlush)
-        return { rank: 5, name: `Flush (${sortedValues[0]} high)` };
-    if (isStraight)
-        return { rank: 4, name: `Straight (${sortedValues[0]} high)` };
-    if (sortedCounts[0][1] === 3)
-        return { rank: 3, name: `Three of a Kind (${sortedCounts[0][0]})` };
-    if (sortedCounts[0][1] === 2 && sortedCounts[1][1] === 2)
-        return {
-            rank: 2,
-            name: `Two Pair (${sortedCounts[0][0]} and ${sortedCounts[1][0]})`,
-        };
-    if (sortedCounts[0][1] === 2)
-        return { rank: 1, name: `One Pair (${sortedCounts[0][0]})` };
-
-    return { rank: 0, name: `High Card (${sortedValues[0]})` };
-}
-
-function compareSameRankHands(hand1Values, hand2Values) {
-    for (let i = 0; i < hand1Values.length; i++) {
-        if (hand1Values[i] !== hand2Values[i]) {
-            return hand1Values[i] > hand2Values[i] ? 1 : -1;
-        }
-    }
-    return 0;
+    return converted
 }
 
 function showDown() {
-    let player1Hand = [...player1Cards, ...communityCards];
-    let player2Hand = [...player2Cards, ...communityCards];
+    let player1Hand = convertCards([...player1Cards, ...communityCards]);
+    let player2Hand = convertCards([...player2Cards, ...communityCards]);
 
-    let player1BestHand = getHandRank(player1Hand);
-    let player2BestHand = getHandRank(player2Hand);
+    const hand1 = Hand.solve(player1Hand);
+    const hand2 = Hand.solve(player2Hand);
 
-    let winnerMessage;
-    if (player1BestHand.rank > player2BestHand.rank) {
-        winnerMessage = `Player 1 Wins with ${player1BestHand.name}!`;
-        player1Chips += pot;
-    } else if (player2BestHand.rank > player1BestHand.rank) {
-        winnerMessage = `Player 2 Wins with ${player2BestHand.name}!`;
-        player2Chips += pot;
-    } else {
-        let comparison = compareSameRankHands(
-            player1BestHand.name,
-            player2BestHand.name
-        );
-        if (comparison > 0) {
-            winnerMessage = `Player 1 Wins with ${player1BestHand.name} (${player1BestHand.name} higher)!`;
-            player1Chips += pot;
-        } else if (comparison < 0) {
-            winnerMessage = `Player 2 Wins with ${player2BestHand.name} (${player2BestHand.name} higher)!`;
-            player2Chips += pot;
-        } else {
-            winnerMessage = `It's a tie with ${player1BestHand.name}!`;
-            player1Chips += pot / 2;
-            player2Chips += pot / 2;
-        }
+    if (hand1.loseTo(hand2)) {
+        winnerMessage = `Player 2 Wins (${hand2.descr})!`
+    }
+    if (hand2.loseTo(hand1)) {
+        winnerMessage = `Player 1 Wins (${hand1.descr})!`
+    }
+    if (hand1.loseTo(hand2) === hand2.loseTo(hand1)) {
+        winnerMessage = `It's a tie (${hand1.descr})!`
     }
 
     document.getElementById("winner-message").innerText = winnerMessage;
     document.getElementById("showdown-modal").style.display = "block";
-}
-
-function checkStraight(values) {
-    let indexMap = {
-        2: 0,
-        3: 1,
-        4: 2,
-        5: 3,
-        6: 4,
-        7: 5,
-        8: 6,
-        9: 7,
-        10: 8,
-        J: 9,
-        Q: 10,
-        K: 11,
-        A: 12,
-    };
-    let indexValues = values.map((v) => indexMap[v]).sort((a, b) => a - b);
-    let count = 1;
-    for (let i = 1; i < indexValues.length; i++) {
-        if (indexValues[i] === indexValues[i - 1] + 1) count++;
-        else if (indexValues[i] !== indexValues[i - 1]) count = 1;
-        if (count >= 5) return true;
-    }
-    return false;
-}
-
-function compareSameRankHands(hand1, hand2) {
-    for (let i = 0; i < hand1.length; i++) {
-        if (hand1[i] !== hand2[i]) {
-            return hand1[i] > hand2[i] ? 1 : -1;
-        }
-    }
-    return 0;
 }
 
 function updateDisplay() {
