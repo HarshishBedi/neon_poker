@@ -194,8 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
-
 const suits = ["♠", "♣", "♦", "♥"];
 const values = [
     "2",
@@ -591,73 +589,6 @@ jQuery.fn.momentus = function (cfg) {
     return this;
 };
 
-// // $(".wheel").momentus({
-// //     u: 1,
-// //     mass: 1000,
-// //     wheelRatio: -1000,
-// //     mouseRatio: 6,
-// //     onChange: function (coords, velocity) {
-// //         console.log("update");
-// //         $(".wheel > div").each(function (i) {
-// //             var angle = -(coords.y / 2) + (360 / 16) * i;
-// //             $(this).css(
-// //                 "transform",
-// //                 "perspective(500px) rotate3d(1,0,0," +
-// //                 angle +
-// //                 "deg) translate3d(0,0,158px)"
-// //             );
-// //         });
-// //     }
-// // });
-
-// function createWheel(items) {
-//     const wheel = document.querySelector(".wheel");
-//     wheel.innerHTML = ""; // Clear existing items
-
-//     const numItems = items.length;
-//     const angleStep = 360 / numItems;
-//     const radius = 158; // Keep or adjust as needed
-
-//     items.forEach((item, i) => {
-//         const div = document.createElement("div");
-//         div.textContent = item;
-
-//         const angle = i * angleStep;
-//         div.style.transform = `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,${radius}px)`;
-//         div.style.MozTransform = `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,${radius}px)`;
-//         div.style.msTransform = `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,${radius}px)`;
-//         div.style.webkitTransform = `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,${radius}px)`;
-
-//         wheel.appendChild(div);
-//     });
-// }
-
-// const items = ["$10", "$20", "$30", "$40", "$50", "$60", "$70", "$80", "$90", "$100", "$110", "$120", "$130", "$140", "$150", "$160", "$170", "$180", "$190", "ALL-IN"];
-// createWheel(items)
-
-// // Apply the momentus function
-// $(".wheel").momentus({
-//     u: 1,
-//     mass: 1000,
-//     wheelRatio: -1000,
-//     mouseRatio: 6,
-//     onChange: function (coords, velocity) {
-//         console.log("update");
-//         const numItems = $(".wheel > div").length;
-//         const angleStep = 360 / numItems;
-
-//         $(".wheel > div").each(function (i) {
-//             var angle = -(coords.y / 2) + angleStep * i;
-//             $(this).css({
-//                 "transform": `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,158px)`,
-//                 "-moz-transform": `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,158px)`,
-//                 "-ms-transform": `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,158px)`,
-//                 "-webkit-transform": `perspective(500px) rotate3d(1,0,0,${angle}deg) translate3d(0,0,158px)`
-//             });
-//         });
-//     }
-// });
-
 // Load the sound effect
 const tickSound = new Audio("sounds/tick.mp3");
 
@@ -747,77 +678,3 @@ $(".wheel").momentus({
         }
     }
 })
-
-/*
-(function(){
-  var startY, // px
-      curRot = 0, // deg
-      vel = 0, // deg/ms
-      
-      lastRot, // deg
-      lastTime, // ms
-      lastY, // px
- 
-      mass = 1000, // virtual
-      u = 1, // virtual
-  
-      iStartTime = Date.now();
-  $('.wheel').on('mousedown touchstart', function(e){
-    vel = 0;
-    e.preventDefault();
-    startY = e.pageY/2 || e.originalEvent.touches[0].pageY/2;
-    
-    $('body').on('mousemove touchmove', function(e){
-      e.preventDefault();
-      var newY = e.pageY/2 || e.originalEvent.touches[0].pageY/2,
-          difRot = (newY - startY); // deg
-      curRot -= difRot;
-      lastY = startY;
-      startY = newY;
-      lastRot = difRot;
-      lastTime = Date.now();
-      //Each side has to be transformed individually due to IE's BS
-      $('.wheel > div').each(function(i){
-        var angle = curRot + (360/10)*i;
-        console.log(i, angle);
-        $(this).css('transform', 'perspective(500px) rotate3d(1,0,0,'+angle+'deg) translate3d(0,0,122px)');
-      });
-    });
-    
-    $('body').on('mouseup touchend', function(){
-      var newTime = Date.now(),
-          difTime = newTime - lastTime;
-      vel -= (lastRot / difTime)/(e.pageY ? 6 : 1);
-      iStartTime = null;
-      $('body').off('mousemove touchmove mouseup touchend');
-    });
-    
-  });
-  
-  (function inertia(){
-    if(iStartTime == null){
-      //Prevents it from doing a double rotation in a given frame
-      iStartTime = Date.now();
-    }
-    else if(vel != 0){
-      var force = vel * u,
-          acc = force/mass,
-          newTime = Date.now(),
-          time = newTime - iStartTime;
-      iStartTime = newTime;
-      vel -= acc * time;
-      var rotDif = (vel * time);
-      curRot += rotDif;
-      $('.wheel > div').each(function(i){
-        var angle = curRot + (360/10)*i;
-        $(this).css('transform', 'perspective(500px) rotate3d(1,0,0,'+angle+'deg) translate3d(0,0,122px)');
-      });
-    }
-    requestAnimationFrame(inertia);
-  })();
-  
-  $(document).on('touchmove', function(e){
-    e.preventDefault();
-  });
-  
-})();*/
