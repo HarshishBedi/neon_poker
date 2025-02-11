@@ -10,35 +10,23 @@ def create_deck():
     return deck
 
 def deal_cards(deck):
-    return [deck.pop(), deck.pop()], [deck.pop(), deck.pop()], [deck.pop()]
+    return [deck.pop(), deck.pop()], [deck.pop(), deck.pop()], [deck.pop(), deck.pop(), deck.pop()]
 
-def get_hand_rank(cards):
-    # Simplified rank calculation
-    values = [card[:-1] for card in cards]
-    unique_values = set(values)
-    if len(unique_values) == 2:
-        return "Full House"
-    if len(unique_values) == 3:
-        return "Three of a Kind"
-    return "High Card"
+def place_bet(current_player, bet_amount, player1_chips, player2_chips, pot):
+    if current_player == 1 and bet_amount <= player1_chips:
+        player1_chips -= bet_amount
+        pot += bet_amount
+        current_player = 2
+    elif current_player == 2 and bet_amount <= player2_chips:
+        player2_chips -= bet_amount
+        pot += bet_amount
+        current_player = 1
+    return player1_chips, player2_chips, pot, current_player
 
 def evaluate_winner(player1_cards, player2_cards, community_cards):
-    player1_hand = player1_cards + community_cards
-    player2_hand = player2_cards + community_cards
+    return f"Winner: {random.choice(['Player 1', 'Player 2', 'Tie'])}"
 
-    player1_rank = get_hand_rank(player1_hand)
-    player2_rank = get_hand_rank(player2_hand)
-
-    if player1_rank > player2_rank:
-        return "Player 1 Wins!"
-    elif player2_rank > player1_rank:
-        return "Player 2 Wins!"
-    else:
-        return "It's a Tie!"
-
-# Game setup
+# Initialize game
 deck = create_deck()
 player1, player2, community = deal_cards(deck)
 
-result = evaluate_winner(player1, player2, community)
-print(result)
