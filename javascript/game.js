@@ -293,9 +293,9 @@ function fold() {
     document.getElementById("winner-message").innerText = `${winner} wins by fold!`;
     document.getElementById("showdown-modal").style.display = "block";
 
-    setTimeout(() => {
-        playAgain(); // Start the next round
-    }, 2000);
+    // setTimeout(() => {
+    // playAgain(); // Start the next round
+    // }, 2000);
 }
 
 document.getElementById("fold-button").addEventListener("click", fold);
@@ -338,8 +338,12 @@ function dealCards() {
 }
 
 const betTimeLimit = 10; // Time limit in seconds
+const chipsSound = new Audio("sounds/chips.mp3");
 
 function placeBet() {
+    chipsSound.currentTime = 0; // Reset sound for rapid play
+    chipsSound.play().catch(err => console.log("Audio play error:", err));
+
     clearTimeout(betTimer); // Clear previous timer
     const callButtonValue = document.getElementById("call-button").getAttribute('value');
     let betAmount = callButtonValue.toUpperCase() === 'ALL-IN' ? (currentPlayer === 1 ? player1Chips : player2Chips) : parseInt(callButtonValue.replace('$', ''));
