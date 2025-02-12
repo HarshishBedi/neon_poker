@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
       name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
     <title>Poker Game</title>
 
@@ -16,14 +16,16 @@
   </head>
   <body>
     <main>
+      <!-- Game Controls -->
       <div id="game-controls">
         <button id="game-menu-button">Menu</button>
         <button id="game-restart-button">Restart</button>
         <button id="game-instructions-button">Instructions</button>
       </div>
-      <!-- Use HUD for Score, High Score, and Other Game Information -->
+      <!-- HUD for scores and other game info -->
       <div id="hud"></div>
 
+      <!-- Start Menu Screen -->
       <div id="start-menu-screen" class="active screen">
         <div class="container">
           <h1 id="game-title">Neon Poker</h1>
@@ -33,18 +35,19 @@
         </div>
       </div>
 
+      <!-- Settings Screen -->
       <div id="settings-screen" class="screen">
         <div class="container">
           <h2>Settings</h2>
-          <!-- Add settings options here -->
+          <!-- Add your settings options here -->
           <button id="settings-back-button">Back</button>
         </div>
       </div>
 
+      <!-- Instructions Screen -->
       <div id="instructions-screen" class="screen">
         <div class="container">
           <h2>Neon Poker Instructions</h2>
-
           <h3>How to Play:</h3>
           <ul>
             <li>Played with 2-6 players.</li>
@@ -65,8 +68,7 @@
               the deck.
             </li>
             <li>
-              <strong>Glitch the River:</strong> Change the final community
-              card.
+              <strong>Glitch the River:</strong> Change the final community card.
             </li>
             <li>
               <strong>Predictive Bet:</strong> AI suggests bets based on
@@ -85,44 +87,40 @@
         </div>
       </div>
 
+      <!-- Game Screen -->
       <div id="game-screen" class="screen">
         <div id="game-container">
           <div class="players-area">
+            <!-- Player 1 Area -->
             <div class="player-area" id="player1-area">
               <h2 id="player1-area-header" class="player-area-header">Player 1</h2>
               <div id="player1-cards"></div>
               <p class="player-chips">
                 Chips: <span id="player1-chips">1000</span>
               </p>
-              <div
-                id="player1-active-timeline"
-                class="player-active-timeline"
-              ></div>
+              <div id="player1-active-timeline" class="player-active-timeline"></div>
             </div>
+            <!-- Player 2 Area -->
             <div class="player-area" id="player2-area">
               <h2 id="player2-area-header" class="player-area-header">Player 2</h2>
               <div id="player2-cards"></div>
               <p class="player-chips">
                 Chips: <span id="player2-chips">1000</span>
               </p>
-              <div
-                id="player2-active-timeline"
-                class="player-active-timeline"
-              ></div>
+              <div id="player2-active-timeline" class="player-active-timeline"></div>
             </div>
           </div>
+          <!-- Community Cards -->
           <div class="community-area">
             <h2>Community Cards</h2>
             <div id="community-cards"></div>
           </div>
+          <!-- Pot Display -->
           <div id="pot">
             <h3>Total Pot: $<span id="pot-amount">0</span></h3>
           </div>
+          <!-- Betting Section -->
           <div id="betting-section">
-            <!-- <label
-              >Bet Amount:
-              <input type="number" id="bet-amount" min="10" value="10"
-            /></label> -->
             <button id="fold-button">Fold</button>
             <div class="separator-dot fold-separator">•</div>
             <div id="calling-section">
@@ -131,17 +129,22 @@
                   <div class="wheel"></div>
                 </div>
               </div>
+              <!-- Call/Raise button -->
               <button id="call-button">Call</button>
+              <!-- New Check button (only visible when no extra bet is required) -->
+              <button id="check-button" style="display: none;">Check</button>
             </div>
           </div>
         </div>
+        <!-- Showdown Modal -->
         <div id="showdown-modal">
           <h2 id="winner-message"></h2>
-          <button onclick="playAgain()">Play Again</button>
+          <button onclick="playAgain()">Next Hand</button>
           <button onclick="resetGame()">New Game</button>
         </div>
       </div>
 
+      <!-- Game Over Screen -->
       <div id="game-over-screen" class="screen">
         <div class="container">
           <div id="game-over-message"></div>
@@ -151,14 +154,16 @@
       </div>
     </main>
 
-    <audio autoplay="" id="background-music" loop="">
+    <!-- Background & Sound Effects -->
+    <audio autoplay id="background-music" loop>
       <source src="background-music.mp3" type="audio/mpeg" />
     </audio>
     <audio id="start-game-sound">
       <source src="start-game-sound.mp3" type="audio/mpeg" />
     </audio>
-    <!--Extra audio tags for sound effects-->
+    <!-- Extra audio tags for sound effects can go here -->
 
+    <!-- External JavaScript Files -->
     <script type="text/javascript" src="./javascript/pokersolver.js"></script>
     <script type="text/javascript" src="./javascript/game.js"></script>
   </body>
