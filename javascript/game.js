@@ -416,33 +416,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function showDown() {
-        let player1Hand = convertCards([...player1Cards, ...communityCards]);
-        let player2Hand = convertCards([...player2Cards, ...communityCards]);
-        const hand1 = Hand.solve(player1Hand);
-        const hand2 = Hand.solve(player2Hand);
-        let winnerMessage = "";
-
-        if (hand1.loseTo(hand2)) {
-            winnerMessage = `Player 2 Wins (${hand2.descr})!`;
-            player2Chips += pot;
-            lastWinner = 2;
-        }
-        if (hand2.loseTo(hand1)) {
-            winnerMessage = `Player 1 Wins (${hand1.descr})!`;
-            player1Chips += pot;
-            lastWinner = 1;
-        }
-        if (hand1.loseTo(hand2) === hand2.loseTo(hand1)) {
-            winnerMessage = `It's a tie (${hand1.descr})!`;
-            player1Chips += pot / 2;
-            player2Chips += pot / 2;
-            lastWinner = "tie";
-        }
-
-        document.getElementById("winner-message").innerText = winnerMessage;
-        document.getElementById("showdown-modal").style.display = "block";
-        pot = 0;
-        updateDisplay();
+        clearTimeout(betTimer);
+      let player1Hand = convertCards([...player1Cards, ...communityCards]);
+      let player2Hand = convertCards([...player2Cards, ...communityCards]);
+      const hand1 = Hand.solve(player1Hand);
+      const hand2 = Hand.solve(player2Hand);
+      let winnerMessage = "";
+  
+      if (hand1.loseTo(hand2)) {
+        winnerMessage = `Player 2 Wins (${hand2.descr})!`;
+        player2Chips += pot;
+        lastWinner = 2;
+      }
+      if (hand2.loseTo(hand1)) {
+        winnerMessage = `Player 1 Wins (${hand1.descr})!`;
+        player1Chips += pot;
+        lastWinner = 1;
+      }
+      if (hand1.loseTo(hand2) === hand2.loseTo(hand1)) {
+        winnerMessage = `It's a tie (${hand1.descr})!`;
+        player1Chips += pot / 2;
+        player2Chips += pot / 2;
+        lastWinner = "tie";
+      }
+  
+      document.getElementById("winner-message").innerText = winnerMessage;
+      document.getElementById("showdown-modal").style.display = "block";
+      pot = 0;
+      updateDisplay();
     }
 
     // ------------------------------------------------------------
