@@ -98,9 +98,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         resetGame() {
-            // Reset game logic here.
-            this.isPaused = false;
-            cancelAnimationFrame(this.animationFrameId);
+            // Clear any active timer before resetting the game.
+            clearTimeout(betTimer);
+            document.getElementById("showdown-modal").style.display = "none";
+            player1Chips = 1000;
+            player2Chips = 1000;
+            player1Cards = [];
+            player2Cards = [];
+            communityCards = [];
+            bettingRound = 0;
+            player1TotalBet = 0;
+            player2TotalBet = 0;
+            betTimer = null;
+            pot = 0;
+            currentPlayer = 1;
+            deck = [];
+            dealCards();
         }
 
         pause() {
@@ -204,6 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastActionWasCheck = false;
 
     function resetGame() {
+        // Reset timer on game reset.
+        clearTimeout(betTimer);
         document.getElementById("showdown-modal").style.display = "none";
         player1Chips = 1000;
         player2Chips = 1000;
@@ -221,6 +236,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function playAgain() {
+        // Reset timer on new hand.
+        clearTimeout(betTimer);
         document.getElementById("showdown-modal").style.display = "none";
         player1Cards = [];
         player2Cards = [];
@@ -254,9 +271,11 @@ document.addEventListener("DOMContentLoaded", () => {
         pot = smallBlind + bigBlind;
         updateBlindsUI();
         updateDisplay();
-    }     
+    }
 
     function fold() {
+        // Reset the timer on fold.
+        clearTimeout(betTimer);
         const winner = currentPlayer === 1 ? "Player 2" : "Player 1";
         if (currentPlayer === 1) {
             player2Chips += pot;
@@ -417,33 +436,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function showDown() {
         clearTimeout(betTimer);
-      let player1Hand = convertCards([...player1Cards, ...communityCards]);
-      let player2Hand = convertCards([...player2Cards, ...communityCards]);
-      const hand1 = Hand.solve(player1Hand);
-      const hand2 = Hand.solve(player2Hand);
-      let winnerMessage = "";
-  
-      if (hand1.loseTo(hand2)) {
-        winnerMessage = `Player 2 Wins (${hand2.descr})!`;
-        player2Chips += pot;
-        lastWinner = 2;
-      }
-      if (hand2.loseTo(hand1)) {
-        winnerMessage = `Player 1 Wins (${hand1.descr})!`;
-        player1Chips += pot;
-        lastWinner = 1;
-      }
-      if (hand1.loseTo(hand2) === hand2.loseTo(hand1)) {
-        winnerMessage = `It's a tie (${hand1.descr})!`;
-        player1Chips += pot / 2;
-        player2Chips += pot / 2;
-        lastWinner = "tie";
-      }
-  
-      document.getElementById("winner-message").innerText = winnerMessage;
-      document.getElementById("showdown-modal").style.display = "block";
-      pot = 0;
-      updateDisplay();
+        let player1Hand = convertCards([...player1Cards, ...communityCards]);
+        let player2Hand = convertCards([...player2Cards, ...communityCards]);
+        const hand1 = Hand.solve(player1Hand);
+        const hand2 = Hand.solve(player2Hand);
+        let winnerMessage = "";
+
+        if (hand1.loseTo(hand2)) {
+            winnerMessage = `Player 2 Wins (${hand2.descr})!`;
+            player2Chips += pot;
+            lastWinner = 2;
+        }
+        if (hand2.loseTo(hand1)) {
+            winnerMessage = `Player 1 Wins (${hand1.descr})!`;
+            player1Chips += pot;
+            lastWinner = 1;
+        }
+        if (hand1.loseTo(hand2) === hand2.loseTo(hand1)) {
+            winnerMessage = `It's a tie (${hand1.descr})!`;
+            player1Chips += pot / 2;
+            player2Chips += pot / 2;
+            lastWinner = "tie";
+        }
+
+        document.getElementById("winner-message").innerText = winnerMessage;
+        document.getElementById("showdown-modal").style.display = "block";
+        pot = 0;
+        updateDisplay();
     }
 
     // ------------------------------------------------------------
@@ -493,6 +512,9 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCallButton(currentSelection);
     }
 
+    // ------------------------------------------------------------
+    // Modified updateDisplay Function to Flip/Hide Opponent's Hand
+    // ------------------------------------------------------------
     function updateDisplay() {
         document
             .getElementById("player1-area")
@@ -519,8 +541,25 @@ document.addEventListener("DOMContentLoaded", () => {
             return `<div class="separator-dot">•</div>`;
         }
 
-        const player1CardsHTML = player1Cards.map(card => getCardImage(card)).join("");
-        const player2CardsHTML = player2Cards.map(card => getCardImage(card)).join("");
+        let player1CardsHTML, player2CardsHTML;
+        // If the showdown modal is open, reveal both hands.
+        const showdownModalDisplay = document.getElementById("showdown-modal").style.display;
+        if (showdownModalDisplay === "block") {
+            player1CardsHTML = player1Cards.map(card => getCardImage(card)).join("");
+            player2CardsHTML = player2Cards.map(card => getCardImage(card)).join("");
+        } else {
+            // Only reveal the current player's hand; hide the opponent's.
+            if (currentPlayer === 1) {
+                player1CardsHTML = player1Cards.map(card => getCardImage(card)).join("");
+                player2CardsHTML = player2Cards.map(card => getCardBack()).join("");
+            } else if (currentPlayer === 2) {
+                player1CardsHTML = player1Cards.map(card => getCardBack()).join("");
+                player2CardsHTML = player2Cards.map(card => getCardImage(card)).join("");
+            } else {
+                player1CardsHTML = player1Cards.map(card => getCardImage(card)).join("");
+                player2CardsHTML = player2Cards.map(card => getCardImage(card)).join("");
+            }
+        }
 
         let communityCardsHTML = "";
         for (let i = 0; i < communityCards.length; i++) {
