@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const gameRestartButton = document.getElementById("game-restart-button");
             const gameInstructionsButton = document.getElementById("game-instructions-button");
             const checkButton = document.getElementById("check-button");
+            const glitchButton = document.getElementById("glitch-button"); // New glitch button
 
             playButton.addEventListener("click", this.startGame.bind(this));
             settingsButton.addEventListener("click", this.ui.settings.bind(this.ui));
@@ -182,6 +183,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Add the new Check button event listener.
             checkButton.addEventListener("click", check);
+
+            // Add the new Glitch button event listener.
+            if (glitchButton) {
+                glitchButton.addEventListener("click", () => {
+                    if (currentPlayer === 1 && player1Cards.includes("GLITCH")) {
+                        useGlitch(1);
+                    } else if (currentPlayer === 2 && player2Cards.includes("GLITCH")) {
+                        useGlitch(2);
+                    } else {
+                        alert("No Glitch card available!");
+                    }
+                });
+            }
         }
     }
 
@@ -195,6 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
     let deck = [];
+    // When dealing cards, each player gets two normal cards plus the special glitch card.
     let player1Cards = [];
     let player2Cards = [];
     let communityCards = [];
@@ -314,11 +329,11 @@ document.addEventListener("DOMContentLoaded", () => {
     function dealCards() {
         createDeck();
         assignBlinds();
-        player1Cards = [deck.pop(), deck.pop()];
-        player2Cards = [deck.pop(), deck.pop()];
+        // Deal two normal cards and add the special Glitch card ("GLITCH") to each player’s hand.
+        player1Cards = [deck.pop(), deck.pop(), "GLITCH"];
+        player2Cards = [deck.pop(), deck.pop(), "GLITCH"];
         communityCards = [];
         bettingRound = 0;
-        // pot = 0;  // This line resets the pot to 0!
         updateDisplay();
     }
 
@@ -426,18 +441,21 @@ document.addEventListener("DOMContentLoaded", () => {
     function convertCards(cards) {
         const suitMap = { "♥": "h", "♦": "d", "♠": "s", "♣": "c" };
         const converted = cards.map(card => {
+            // Skip special glitch cards
+            if (card === "GLITCH") return "";
             let rank = card.slice(0, -1);
             let suit = suitMap[card.slice(-1)];
             if (rank === "10") rank = "T";
             return `${rank}${suit}`;
-        });
+        }).filter(c => c !== "");
         return converted;
     }
 
     function showDown() {
         clearTimeout(betTimer);
-        let player1Hand = convertCards([...player1Cards, ...communityCards]);
-        let player2Hand = convertCards([...player2Cards, ...communityCards]);
+        // Exclude the glitch card from the hand evaluation.
+        let player1Hand = convertCards([...player1Cards.filter(card => card !== "GLITCH"), ...communityCards]);
+        let player2Hand = convertCards([...player2Cards.filter(card => card !== "GLITCH"), ...communityCards]);
         const hand1 = Hand.solve(player1Hand);
         const hand2 = Hand.solve(player2Hand);
         let winnerMessage = "";
@@ -462,6 +480,31 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("winner-message").innerText = winnerMessage;
         document.getElementById("showdown-modal").style.display = "block";
         pot = 0;
+        updateDisplay();
+    }
+
+    // ------------------------------------------------------------
+    // Glitch the River Functionality
+    // ------------------------------------------------------------
+    // This function allows the current player (if holding the GLITCH card)
+    // to replace the river card (last card in communityCards) with the next card from the deck.
+    function useGlitch(player) {
+        // Ensure the river card has been dealt (communityCards should have 5 cards: flop (3), turn (1), river (1)).
+        if (communityCards.length < 5) {
+            alert("The river card is not yet dealt!");
+            return;
+        }
+        // Replace the river card (last card) with the next card in the deck.
+        const newRiverCard = deck.pop();
+        communityCards[communityCards.length - 1] = newRiverCard;
+        // Remove the glitch card from the respective player's hand.
+        if (player === 1) {
+            const index = player1Cards.indexOf("GLITCH");
+            if (index > -1) player1Cards.splice(index, 1);
+        } else if (player === 2) {
+            const index = player2Cards.indexOf("GLITCH");
+            if (index > -1) player2Cards.splice(index, 1);
+        }
         updateDisplay();
     }
 
@@ -523,7 +566,11 @@ document.addEventListener("DOMContentLoaded", () => {
             .getElementById("player2-area")
             .classList.toggle("active", currentPlayer === 2);
 
+        // Updated getCardImage to render the special Glitch card using the black_joker.svg asset.
         function getCardImage(card) {
+            if (card === "GLITCH") {
+                return `<div class="card"><img src="./assets/cards/glitch_the_river.png" class="card-image" alt="Glitch Card"></div>`;
+            }
             let value = card.slice(0, -1);
             let suit = card.slice(-1);
             let valueMap = { K: "king", Q: "queen", J: "jack", A: "ace" };
@@ -784,4 +831,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     window.playAgain = playAgain;
     window.resetGame = resetGame;
+    // NEW CODE: Use Joker Button Event Listener
+    const useJokerButton = document.getElementById("use-joker-button");
+    if (useJokerButton) {
+        useJokerButton.addEventListener("click", () => {
+            if (currentPlayer === 1 && player1Cards.includes("GLITCH")) {
+                useGlitch(1);
+            } else if (currentPlayer === 2 && player2Cards.includes("GLITCH")) {
+                useGlitch(2);
+            } else {
+                alert("No Joker card available!");
+            }
+        });
+    }
 });
