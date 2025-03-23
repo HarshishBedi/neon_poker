@@ -28,6 +28,7 @@ window.dealer = 1;
 window.betTimer = null;
 window.lastActionWasCheck = false;
 window.betTimeLimit = 10
+window.lastActiveItem = null;
 
 window.resetGame = function () {
     clearTimeout(window.betTimer);
@@ -303,6 +304,10 @@ window.placeBet = function () {
 
     updateDisplay();
     startBettingTimer();
+
+    if (currentPlayer === 2 && typeof window.runComputerTurn === 'function') {
+        window.runComputerTurn()
+    }
 }
 
 window.check = function () {
