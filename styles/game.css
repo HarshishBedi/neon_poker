@@ -4,7 +4,7 @@ html {
   padding: 0;
   height: 100%;
   font-family: "Orbitron", sans-serif;
-  background: url('../assets/bg.jpg') no-repeat center center fixed;
+  background: linear-gradient(135deg, rgba(26,26,46,0.5) 0%, rgba(22,33,62,0.5) 50%, rgba(15,52,96,0.5) 100%), url('../assets/bg.jpg') no-repeat center center fixed;
   background-size: cover;
   color: #ffffff;
 }
@@ -16,7 +16,7 @@ html {
   top: 0;
   left: 0;
   /* Optionally, use a semi-transparent gradient overlay: */
-  background: linear-gradient(135deg, rgba(26,26,46,0.5) 0%, rgba(22,33,62,0.5) 50%, rgba(15,52,96,0.5) 100%);
+  /* background: linear-gradient(135deg, rgba(26,26,46,0.5) 0%, rgba(22,33,62,0.5) 50%, rgba(15,52,96,0.5) 100%); */
 }
 .screen.active {
   display: flex;
@@ -116,11 +116,11 @@ button:disabled {
 
   /* margin: 20px auto; */
   max-width: 600px;
-  padding: 20px;
-  border: 2px solid white;
-  border-radius: 8px;
-  background-color: #1a1a2e;
-  margin-top: 60px;
+  /* padding: 20px; */
+  /* border: 2px solid white; */
+  /* border-radius: 8px; */
+  /* background-color: #1a1a2e; */
+  /* margin-top: 60px; */
   /* overflow: auto; */
 }
 #game-screen {
