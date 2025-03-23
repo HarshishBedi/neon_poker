@@ -1,62 +1,189 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
-
 @CrewBase
 class NeonPoker():
     """NeonPoker crew"""
 
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
+    # Paths to the YAML configuration files for agents and tasks.
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
+    # Define agents based on their roles.
     @agent
-    def researcher(self) -> Agent:
+    def core_game_mechanics(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'],
+            config=self.agents_config['core_game_mechanics'],
             verbose=True
         )
 
     @agent
-    def reporting_analyst(self) -> Agent:
+    def neural_bluff(self) -> Agent:
         return Agent(
-            config=self.agents_config['reporting_analyst'],
+            config=self.agents_config['neural_bluff'],
             verbose=True
         )
 
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
+    @agent
+    def quantum_swap(self) -> Agent:
+        return Agent(
+            config=self.agents_config['quantum_swap'],
+            verbose=True
+        )
+
+    @agent
+    def glitch_the_river(self) -> Agent:
+        return Agent(
+            config=self.agents_config['glitch_the_river'],
+            verbose=True
+        )
+
+    @agent
+    def predictive_bet(self) -> Agent:
+        return Agent(
+            config=self.agents_config['predictive_bet'],
+            verbose=True
+        )
+
+    @agent
+    def ui_ux(self) -> Agent:
+        return Agent(
+            config=self.agents_config['ui_ux'],
+            verbose=True
+        )
+
+    @agent
+    def animations(self) -> Agent:
+        return Agent(
+            config=self.agents_config['animations'],
+            verbose=True
+        )
+
+    @agent
+    def user_input(self) -> Agent:
+        return Agent(
+            config=self.agents_config['user_input'],
+            verbose=True
+        )
+
+    @agent
+    def data_handling(self) -> Agent:
+        return Agent(
+            config=self.agents_config['data_handling'],
+            verbose=True
+        )
+
+    @agent
+    def responsive_design(self) -> Agent:
+        return Agent(
+            config=self.agents_config['responsive_design'],
+            verbose=True
+        )
+
+    @agent
+    def game_flow(self) -> Agent:
+        return Agent(
+            config=self.agents_config['game_flow'],
+            verbose=True
+        )
+
+    # Define tasks corresponding to each agent.
     @task
-    def research_task(self) -> Task:
+    def core_game_mechanics_task(self) -> Task:
         return Task(
-            config=self.tasks_config['research_task'],
+            config=self.tasks_config['core_game_mechanics']
         )
 
     @task
-    def reporting_task(self) -> Task:
+    def neural_bluff_task(self) -> Task:
         return Task(
-            config=self.tasks_config['reporting_task'],
-            output_file='report.md'
+            config=self.tasks_config['neural_bluff']
+        )
+
+    @task
+    def quantum_swap_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['quantum_swap']
+        )
+
+    @task
+    def glitch_the_river_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['glitch_the_river']
+        )
+
+    @task
+    def predictive_bet_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['predictive_bet']
+        )
+
+    @task
+    def ui_ux_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['ui_ux']
+        )
+
+    @task
+    def animations_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['animations']
+        )
+
+    @task
+    def user_input_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['user_input']
+        )
+
+    @task
+    def data_handling_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['data_handling']
+        )
+
+    @task
+    def responsive_design_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['responsive_design']
+        )
+
+    @task
+    def game_flow_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['game_flow']
         )
 
     @crew
     def crew(self) -> Crew:
-        """Creates the NeonPoker crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
-
+        """Creates and coordinates the Neon Poker crew."""
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=[
+                self.core_game_mechanics(),
+                self.neural_bluff(),
+                self.quantum_swap(),
+                self.glitch_the_river(),
+                self.predictive_bet(),
+                self.ui_ux(),
+                self.animations(),
+                self.user_input(),
+                self.data_handling(),
+                self.responsive_design(),
+                self.game_flow()
+            ],
+            tasks=[
+                self.core_game_mechanics_task(),
+                self.neural_bluff_task(),
+                self.quantum_swap_task(),
+                self.glitch_the_river_task(),
+                self.predictive_bet_task(),
+                self.ui_ux_task(),
+                self.animations_task(),
+                self.user_input_task(),
+                self.data_handling_task(),
+                self.responsive_design_task(),
+                self.game_flow_task()
+            ],
             process=Process.sequential,
             verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )

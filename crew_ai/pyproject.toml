@@ -2,10 +2,12 @@
 name = "neon_poker"
 version = "0.1.0"
 description = "neon_poker using crewAI"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+authors = [
+    { name = "Your Name", email = "you@example.com" },
+]
 requires-python = ">=3.10,<3.13"
 dependencies = [
-    "crewai[tools]>=0.108.0,<1.0.0"
+    "crewai[tools]>=0.108.0,<1.0.0",
 ]
 
 [project.scripts]
@@ -16,8 +18,7 @@ replay = "neon_poker.main:replay"
 test = "neon_poker.main:test"
 
 [build-system]
-requires = ["hatchling"]
+requires = [
+    "hatchling",
+]
 build-backend = "hatchling.build"
-
-[tool.crewai]
-type = "crew"

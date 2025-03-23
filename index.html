@@ -168,16 +168,34 @@
     </main>
 
     <!-- Background & Sound Effects -->
-    <audio autoplay id="background-music" loop>
+    <!-- <audio autoplay id="background-music" loop>
       <source src="background-music.mp3" type="audio/mpeg" />
     </audio>
     <audio id="start-game-sound">
       <source src="start-game-sound.mp3" type="audio/mpeg" />
-    </audio>
+    </audio> -->
     <!-- Extra audio tags for sound effects can go here -->
 
     <!-- External JavaScript Files -->
-    <script type="text/javascript" src="./javascript/pokersolver.js"></script>
-    <script type="text/javascript" src="./javascript/game.js"></script>
+    <script type="text/javascript" src="./js/pokersolver.js"></script>
+    <!-- Core classes -->
+    <script src="./js/ui.js"></script>
+    <script src="./js/gameLogic.js"></script>
+    <script src="./js/gameFlow.js"></script>
+    
+    <!-- Abilities -->
+    <script src="./js/abilities/neuralBluff.js"></script>
+    <script src="./js/abilities/quantumSwap.js"></script>
+    <script src="./js/abilities/glitchTheRiver.js"></script>
+    <script src="./js/abilities/predictiveBet.js"></script>
+    
+    <!-- Helpers -->
+    <script src="./js/inputHandler.js"></script>
+    <script src="./js/animations.js"></script>
+    <script src="./js/dataHandling.js"></script>
+    <script src="./js/responsiveDesign.js"></script>
+    
+    <!-- Bootstrap -->
+    <script src="./js/main.js"></script>
   </body>
 </html>

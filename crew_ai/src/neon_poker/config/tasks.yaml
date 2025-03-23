@@ -1,17 +1,92 @@
-research_task:
+core_game_mechanics:
+  name: "Implement Core Poker Mechanics"
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Develop and integrate Neon Poker's base game mechanics,
+    including card dealing, betting rounds, pot management, and showdown evaluation.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    A dict representing the complete game state: player hands, pot size, community cards, and winner.
+  agent: core_game_mechanics
 
-reporting_task:
+neural_bluff:
+  name: "Implement Neural Bluff Ability"
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Create the logic for the Neural Bluff ability that forces an opponent to reveal one of their hole cards.
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    A function that triggers an opponent’s hole card reveal when activated.
+  agent: neural_bluff
+
+quantum_swap:
+  name: "Implement Quantum Swap Ability"
+  description: >
+    Develop functionality that allows players to swap one of their hole cards with the top card of the deck.
+  expected_output: >
+    A method that exchanges a player’s hole card with the top deck card.
+  agent: quantum_swap
+
+glitch_the_river:
+  name: "Implement Glitch the River Ability"
+  description: >
+    Create the mechanism to replace the final community card with a new card from the deck when the ability is activated.
+  expected_output: >
+    A routine that substitutes the river card and updates game state accordingly.
+  agent: glitch_the_river
+
+predictive_bet:
+  name: "Implement Predictive Bet Ability"
+  description: >
+    Develop an AI-driven system to analyze game patterns and provide betting suggestions to players.
+  expected_output: >
+    A recommendation engine that outputs betting suggestions based on game history.
+  agent: predictive_bet
+
+ui_ux:
+  name: "Design UI and Layout"
+  description: >
+    Create the visual layout for Neon Poker, including start menu, settings, instructions, and game screens,
+    ensuring a futuristic cyberpunk aesthetic.
+  expected_output: >
+    A UI mockup or prototype with all screens implemented.
+  agent: ui_ux
+
+animations:
+  name: "Develop Animations and Visual Effects"
+  description: >
+    Create dynamic animations and visual effects, including glitch effects and smooth transitions,
+    to enhance the Neon Poker experience.
+  expected_output: >
+    A collection of animation assets integrated into the UI.
+  agent: animations
+
+user_input:
+  name: "Develop User Input Handling"
+  description: >
+    Implement robust event listeners and input management for all game controls and interactive elements.
+  expected_output: >
+    An input system handling keyboard, mouse, and touch events reliably.
+  agent: user_input
+
+data_handling:
+  name: "Implement Data Handling and Analytics"
+  description: >
+    Develop a system to log and process game events and player decisions,
+    and analyze the data to provide insights for balancing and improving Neon Poker.
+  expected_output: >
+    A data pipeline that logs events and generates analytic reports.
+  agent: data_handling
+
+responsive_design:
+  name: "Optimize for Responsive Design"
+  description: >
+    Ensure the game interface adapts seamlessly to various screen sizes and supports touch-friendly interactions on mobile devices.
+  expected_output: >
+    A responsive UI layout tested across desktop and mobile resolutions.
+  agent: responsive_design
+
+game_flow:
+  name: "Implement Game Flow and State Management"
+  description: >
+    Develop a state management system to coordinate round transitions, timer-based actions,
+    and game resets, ensuring smooth gameplay progression.
+  expected_output: >
+    A state manager that correctly sequences game rounds and resets.
+  agent: game_flow
