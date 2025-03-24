@@ -189,4 +189,13 @@ window.initInputHandlers = function () {
             }
         }
     });
+
+    document.getElementById("joker-modal-button").addEventListener("click", function () {
+        const modal = document.getElementById("joker-modal");
+        modal.style.display = "block";
+    });
+
+    document.getElementById("close-joker-modal").addEventListener("click", function () {
+        document.getElementById("joker-modal").style.display = "none";
+    });
 };

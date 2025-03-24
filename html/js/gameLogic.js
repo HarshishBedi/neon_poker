@@ -362,7 +362,8 @@ window.updateDisplay = function () {
     for (const card of window.jokerCards) {
         jokerHTML += getCardImage(card);
     }
-    document.getElementById("joker-cards").innerHTML = jokerHTML;
+    document.getElementById("joker-cards-desktop").innerHTML = jokerHTML;
+    document.getElementById("joker-cards-mobile").innerHTML = jokerHTML;
 
     document.getElementById("player1-chips").innerText = `$${player1Chips}`;
     document.getElementById("player2-chips").innerText = `$${player2Chips}`;
