@@ -32,19 +32,6 @@ window.initInputHandlers = function () {
     document.getElementById("fold-button").addEventListener("click", window.fold);
     document.getElementById("call-button").addEventListener("click", window.placeBet);
 
-    // Use Joker (Glitch card)
-    const useJokerButton = document.getElementById("use-joker-button");
-    if (useJokerButton) {
-        useJokerButton.addEventListener("click", () => {
-            const player = window.currentPlayer;
-            if ((player === 1 && window.player1Cards.includes("GLITCH")) || (player === 2 && window.player2Cards.includes("GLITCH"))) {
-                window.useGlitch(player);
-            } else {
-                alert("No Joker card available!");
-            }
-        });
-    }
-
     const items = [
         "$10", "$20", "$30", "$40", "$50", "$60", "$70", "$80", "$90",
         "$100", "$110", "$120", "$130", "$140", "$150", "$160", "$170",

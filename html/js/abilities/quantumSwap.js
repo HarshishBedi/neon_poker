@@ -1,19 +1,17 @@
-window.useQuantumSwap = function (player) {
-    // Swap one non-GLITCH hole card with the top card of the deck
-    const hand = player === 1 ? window.player1Cards : window.player2Cards;
-    const validIndexes = hand.map((card, i) => card !== "GLITCH" ? i : -1).filter(i => i !== -1);
-    if (validIndexes.length === 0) {
-        alert("No valid card to swap!");
-        return;
+window.useQUANTUM_SWAP = function () {
+    if (window.usedJokerThisHand) return;
+    console.log("Used Quantum Swap: Swapping one of Player 1’s cards.");
+    if (window.player1Cards.length > 0) {
+        const index = Math.floor(Math.random() * window.player1Cards.length);
+        const oldCard = window.player1Cards[index];
+        let newCard;
+        do {
+            newCard = window.deck.pop();
+        } while (window.player1Cards.includes(newCard) || window.communityCards.includes(newCard));
+
+        window.player1Cards[index] = newCard;
+        window.usedJokerThisHand = "QUANTUM_SWAP";
+        window.playJokerSound("QUANTUM_SWAP");
+        window.updateDisplay();
     }
-    if (!window.deck.length) {
-        alert("Deck is empty, cannot swap!");
-        return;
-    }
-    const indexToSwap = validIndexes[Math.floor(Math.random() * validIndexes.length)];
-    const newCard = window.deck.pop();
-    const oldCard = hand[indexToSwap];
-    hand[indexToSwap] = newCard;
-    alert(`Player ${player} swapped ${oldCard} for ${newCard}`);
-    window.updateDisplay();
 };

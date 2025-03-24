@@ -1,11 +1,12 @@
-window.useNeuralBluff = function (player) {
-    // Reveal a random non-GLITCH card from the opponent’s hand
-    const opponentCards = player === 1 ? window.player2Cards : window.player1Cards;
-    const revealable = opponentCards.filter(card => card !== "GLITCH");
-    if (!revealable.length) {
-        alert("No valid card to reveal!");
-        return;
-    }
-    const card = revealable[Math.floor(Math.random() * revealable.length)];
-    alert(`Player ${player === 1 ? 2 : 1} reveals: ${card}`);
+window.useNEURAL_BLUFF = function () {
+    if (window.usedJokerThisHand) return;
+
+    console.log("Neural Bluff: Forcing opponent to reveal a card...");
+
+    // Flag which card (0 or 1) of Player 2 should be shown
+    window.revealedOpponentCardIndex = Math.floor(Math.random() * 2);
+
+    window.usedJokerThisHand = "NEURAL_BLUFF";
+    window.playJokerSound("NEURAL_BLUFF");
+    window.updateDisplay();
 };

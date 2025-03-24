@@ -12,6 +12,7 @@ window.deck = [];
 window.player1Cards = [];
 window.player2Cards = [];
 window.communityCards = [];
+window.jokerCards = [];
 
 window.player1Chips = 1000;
 window.player2Chips = 1000;
@@ -29,6 +30,13 @@ window.betTimer = null;
 window.lastActionWasCheck = false;
 window.betTimeLimit = 10
 window.lastActiveItem = null;
+window.usedJokerThisHand = null;
+window.jokerSounds = {
+    GLITCH: new Audio("./sounds/glitch_the_river.wav"),
+    NEURAL_BLUFF: new Audio("./sounds/nueral_bluff.wav"),
+    PREDICTIVE_BET: new Audio("./sounds/predictive_bet.wav"),
+    QUANTUM_SWAP: new Audio("./sounds/quantum_swap.wav"),
+};
 
 window.resetGame = function () {
     clearTimeout(window.betTimer);
@@ -42,6 +50,8 @@ window.resetGame = function () {
     window.player1TotalBet = 0;
     window.player2TotalBet = 0;
     window.betTimer = null;
+    window.usedJokerThisHand = null;
+    window.revealedOpponentCardIndex = null;
     window.pot = 0;
     window.currentPlayer = 1;
     window.dealCards();
@@ -58,6 +68,8 @@ window.playAgain = function () {
     window.player2TotalBet = 0;
     window.pot = 0;
     window.betTimer = null;
+    window.usedJokerThisHand = null;
+    window.revealedOpponentCardIndex = null;
     window.currentPlayer = 1;
     window.dealer = window.dealer === 1 ? 2 : 1;
     window.dealCards();
@@ -126,15 +138,99 @@ window.updateBetButtonsUI = function () {
             ? player2TotalBet - player1TotalBet
             : player1TotalBet - player2TotalBet;
     if (requiredCall < 0) requiredCall = 0;
+
     const checkButton = document.getElementById("check-button");
-    if (requiredCall === 0) {
-        checkButton.removeAttribute('disabled')
+    const foldButton = document.getElementById("fold-button");
+    const callButton = document.getElementById("call-button");
+
+    if (currentPlayer === 1) {
+        // Enable buttons for Player 1
+        foldButton.removeAttribute("disabled");
+        callButton.removeAttribute("disabled");
+
+        if (requiredCall === 0) {
+            checkButton.removeAttribute("disabled");
+        } else {
+            checkButton.setAttribute("disabled", true);
+        }
+
+        let currentSelection = callButton.getAttribute("data-selected") || "$10";
+        window.updateCallButton(currentSelection);
     } else {
-        checkButton.setAttribute('disabled', true)
+        // Disable all input buttons during computer's turn
+        foldButton.setAttribute("disabled", true);
+        callButton.setAttribute("disabled", true);
+        checkButton.setAttribute("disabled", true);
     }
-    let currentSelection = document.getElementById("call-button").getAttribute("data-selected") || "$10";
-    window.updateCallButton(currentSelection);
+};
+
+function getJokerTooltip(card) {
+    const abilityInfo = {
+        "GLITCH": {
+            description: "Glitch the River: Replace the river card after it's revealed.",
+            when: "Usable after the river card is revealed."
+        },
+        "NEURAL_BLUFF": {
+            description: "Neural Bluff: Trick your opponent into making a wrong move.",
+            when: "Usable during your turn before placing a bet."
+        },
+        "PREDICTIVE_BET": {
+            description: "Predictive Bet: Auto-selects optimal bet based on hand strength.",
+            when: "Usable during your turn before placing a bet."
+        },
+        "QUANTUM_SWAP": {
+            description: "Quantum Swap: Swap one of your hole cards with a random one.",
+            when: "Usable before the flop is revealed."
+        }
+    };
+
+    const info = abilityInfo[card] || { description: "Joker Ability", when: "" };
+    const isUsed = window.usedJokerThisHand === card;
+    const hasUsedAny = window.usedJokerThisHand !== null;
+    const usable = canUseJoker(card);
+
+    let statusNote = "";
+
+    if (isUsed) {
+        statusNote = "✅ This Joker has already been used.";
+    } else if (hasUsedAny) {
+        statusNote = "❌ Only one Joker can be used per hand.";
+    } else if (!usable) {
+        statusNote = "⚠️ You can't use this Joker right now.";
+    } else {
+        statusNote = "🟢 Ready to use!";
+    }
+
+    return `
+        ${info.description}
+        <br><small>${info.when}</small>
+        <small style="opacity: 0.8;">${statusNote}</small>
+    `;
 }
+
+window.canUseJoker = function (card) {
+    if (window.usedJokerThisHand) return false;
+
+    switch (card) {
+        case "GLITCH":
+            return window.communityCards.length === 5;
+        case "NEURAL_BLUFF":
+        case "PREDICTIVE_BET":
+            return window.currentPlayer === 1;
+        case "QUANTUM_SWAP":
+            return window.communityCards.length === 0;
+        default:
+            return false;
+    }
+};
+
+window.playJokerSound = function (cardKey) {
+    const sound = window.jokerSounds[cardKey];
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Sound error:", e));
+    }
+};
 
 // ------------------------------------------------------------
 // Modified updateDisplay Function to Flip/Hide Opponent's Hand
@@ -149,9 +245,44 @@ window.updateDisplay = function () {
 
     // Updated getCardImage to render the special Glitch card using the black_joker.svg asset.
     function getCardImage(card) {
-        if (card === "GLITCH") {
-            return `<div class="card"><img src="./assets/cards/glitch_the_river.png" class="card-image" alt="Glitch Card"></div>`;
+        const specialCards = {
+            "GLITCH": "glitch_the_river.png",
+            "NEURAL_BLUFF": "neural_bluff.png",
+            "PREDICTIVE_BET": "predictive_bet.png",
+            "QUANTUM_SWAP": "quantum_swap.png"
+        };
+
+        if (specialCards[card]) {
+            const isUsed = window.usedJokerThisHand === card;
+            const hasUsedAny = window.usedJokerThisHand !== null;
+            const usable = canUseJoker(card);
+
+            const isDisabledByOtherJoker = hasUsedAny && !isUsed;
+            const isNotUsableYet = !usable && !hasUsedAny;
+
+            const shouldDisableClick = isUsed || isDisabledByOtherJoker || isNotUsableYet;
+            const scaleStyle = card === "GLITCH"
+                ? 'transform: scale(1.15); margin: 15px;'
+                : 'transform: scale(1.2); margin: 15px;';
+
+            const opacity = shouldDisableClick ? '0.35' : '1';
+            const cursor = shouldDisableClick ? 'default' : 'pointer';
+            const pointerEvents = 'auto'; // always enabled
+            const onClickHandler = !shouldDisableClick ? `onclick="window.use${card}()"` : '';
+
+            return `
+                <div class="card tooltip-wrapper"
+                    style="${scaleStyle}; cursor: ${cursor}; position: relative; pointer-events: ${pointerEvents};"
+                    ${onClickHandler}>
+                    <img src="./assets/cards/${specialCards[card]}" style="opacity: ${opacity};" class="card-image" alt="${card}">
+                    <div class="custom-tooltip">${getJokerTooltip(card)}</div>
+                    ${isUsed ? `<div class="joker-label used">USED</div>` : ''}
+                    ${isDisabledByOtherJoker ? `<div class="joker-label cross">✖</div>` : ''}
+                </div>
+            `;
         }
+
+        // Normal playing cards
         let value = card.slice(0, -1);
         let suit = card.slice(-1);
         let valueMap = { K: "king", Q: "queen", J: "jack", A: "ace" };
@@ -179,10 +310,22 @@ window.updateDisplay = function () {
         // Only reveal the current player's hand; hide the opponent's.
         if (currentPlayer === 1) {
             player1CardsHTML = player1Cards.map(card => getCardImage(card)).join("");
-            player2CardsHTML = player2Cards.map(card => getCardBack()).join("");
+            player2CardsHTML = player2Cards.map((card, idx) => {
+                if (window.revealedOpponentCardIndex === idx) {
+                    return getCardImage(card); // reveal selected
+                } else {
+                    return getCardBack();
+                }
+            }).join("")
         } else if (currentPlayer === 2) {
-            player1CardsHTML = player1Cards.map(card => getCardBack()).join("");
-            player2CardsHTML = player2Cards.map(card => getCardImage(card)).join("");
+            player1CardsHTML = player1Cards.map(card => getCardImage(card)).join("");
+            player2CardsHTML = player2Cards.map((card, idx) => {
+                if (window.revealedOpponentCardIndex === idx) {
+                    return getCardImage(card); // Show only the revealed card
+                } else {
+                    return getCardBack(); // Hide the rest
+                }
+            }).join("");
         } else {
             player1CardsHTML = player1Cards.map(card => getCardImage(card)).join("");
             player2CardsHTML = player2Cards.map(card => getCardImage(card)).join("");
@@ -214,6 +357,12 @@ window.updateDisplay = function () {
     if (communityCardsHTML !== document.getElementById("community-cards").innerHTML) {
         document.getElementById("community-cards").innerHTML = communityCardsHTML;
     }
+    // Render Glitch card(s) in Joker area
+    let jokerHTML = "";
+    for (const card of window.jokerCards) {
+        jokerHTML += getCardImage(card);
+    }
+    document.getElementById("joker-cards").innerHTML = jokerHTML;
 
     document.getElementById("player1-chips").innerText = `$${player1Chips}`;
     document.getElementById("player2-chips").innerText = `$${player2Chips}`;
@@ -224,28 +373,39 @@ window.updateDisplay = function () {
 
 window.assignBlinds = function () {
     if (window.dealer === 1) {
+        // Player 1 is dealer → P1 = SB, P2 = BB → P1 acts first
         window.player1Chips -= window.smallBlind;
         window.player2Chips -= window.bigBlind;
         window.player1TotalBet = window.smallBlind;
         window.player2TotalBet = window.bigBlind;
         window.currentPlayer = 1;
     } else {
+        // Player 2 is dealer → P2 = SB, P1 = BB → P2 acts first
         window.player2Chips -= window.smallBlind;
         window.player1Chips -= window.bigBlind;
         window.player2TotalBet = window.smallBlind;
         window.player1TotalBet = window.bigBlind;
         window.currentPlayer = 2;
     }
+
     window.pot = window.smallBlind + window.bigBlind;
     window.updateBlindsUI();
     window.updateDisplay();
+
+    // 👇 If computer is first to act, run its turn immediately
+    if (window.currentPlayer === 2 && typeof window.runComputerTurn === 'function') {
+        setTimeout(() => {
+            window.runComputerTurn();
+        }, 1000);
+    }
 };
 
 window.dealCards = function () {
     window.createDeck();
     window.assignBlinds();
-    window.player1Cards = [window.deck.pop(), window.deck.pop(), "GLITCH"];
-    window.player2Cards = [window.deck.pop(), window.deck.pop(), "GLITCH"];
+    window.player1Cards = [window.deck.pop(), window.deck.pop()];
+    window.player2Cards = [window.deck.pop(), window.deck.pop()];
+    window.jokerCards = ["GLITCH", "NEURAL_BLUFF", "PREDICTIVE_BET", "QUANTUM_SWAP"];
     window.communityCards = [];
     window.bettingRound = 0;
     window.updateDisplay();
@@ -306,7 +466,10 @@ window.placeBet = function () {
     startBettingTimer();
 
     if (currentPlayer === 2 && typeof window.runComputerTurn === 'function') {
-        window.runComputerTurn()
+        // Delay the AI's turn to avoid acting too quickly in the same cycle
+        setTimeout(() => {
+            window.runComputerTurn();
+        }, 1000); // 1 second delay is enough to avoid overlap
     }
 }
 
