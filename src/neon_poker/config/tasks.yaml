@@ -90,3 +90,46 @@ game_flow:
   expected_output: >
     A state manager that correctly sequences game rounds and resets.
   agent: game_flow
+
+image_assets_generation:
+  name: "Generate All Image Assets"
+  description: >
+    Use ConfyUI (or your chosen ImageGen model) to produce **all** visual assets in one go:
+    - Startup Screen (logo, title banners in 16:9 & 4:3)
+    - Gameplay Sprites & Backgrounds (idle/action character poses, obstacle graphics, tiled backgrounds for 1x & 2x)
+    - Game State Screens (“Game Over” & “You Win” at 1920×1080 & 1080×1920)
+  expected_output: >
+    PNGs: 
+      • logo.png  
+      • title_banner_16x9.png, title_banner_4x3.png  
+      • sprite_sheet_1x.png, sprite_sheet_2x.png  
+      • background_tile.png  
+      • game_over.png, you_win.png (both in landscape & portrait)
+  agent: image_assets_generation
+
+audio_assets_generation:
+  name: "Generate All Audio Assets"
+  description: >
+    Source and prepare **all** audio assets:
+    - Background music (≥2 looping tracks from Freesound.org)
+    - Sound effects (UI clicks, scoring, special events, game over)
+    Then normalize RMS levels and embed metadata/licensing tags.
+  expected_output: >
+    Audio files packaged as:
+      • 2x loopable tracks (MP3/OGG with license .txt)  
+      • Folder of sound effects (.wav/.ogg), all normalized & tagged
+  agent: audio_assets_generation
+
+asset_integration:
+  name: "Integrate All Assets into Codebase"
+  description: >
+    Automate asset wiring:
+    - Copy images → `/assets/images`  
+    - Copy audio  → `/assets/audio`  
+    - Update HTML/CSS (paths, `srcset`)  
+    - Write a JS module to preload & play audio
+  expected_output: >
+    Codebase changes:
+      • `index.html` and `styles.css` with correct image paths & media queries  
+      • A `audioLoader.js` (or similar) that imports and manages all audio assets
+  agent: asset_integration

@@ -87,6 +87,28 @@ class NeonPoker():
             verbose=True
         )
 
+    # New asset generation agents
+    @agent
+    def image_assets_generation(self) -> Agent:
+        return Agent(
+            config=self.agents_config['image_assets_generation'],
+            verbose=True
+        )
+
+    @agent
+    def audio_assets_generation(self) -> Agent:
+        return Agent(
+            config=self.agents_config['audio_assets_generation'],
+            verbose=True
+        )
+
+    @agent
+    def asset_integration(self) -> Agent:
+        return Agent(
+            config=self.agents_config['asset_integration'],
+            verbose=True
+        )
+
     # Define tasks corresponding to each agent.
     @task
     def core_game_mechanics_task(self) -> Task:
@@ -154,6 +176,25 @@ class NeonPoker():
             config=self.tasks_config['game_flow']
         )
 
+    # New asset generation tasks
+    @task
+    def image_assets_generation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['image_assets_generation']
+        )
+
+    @task
+    def audio_assets_generation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['audio_assets_generation']
+        )
+
+    @task
+    def asset_integration_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['asset_integration']
+        )
+
     @crew
     def crew(self) -> Crew:
         """Creates and coordinates the Neon Poker crew."""
@@ -169,7 +210,10 @@ class NeonPoker():
                 self.user_input(),
                 self.data_handling(),
                 self.responsive_design(),
-                self.game_flow()
+                self.game_flow(),
+                self.image_assets_generation(),
+                self.audio_assets_generation(),
+                self.asset_integration(),
             ],
             tasks=[
                 self.core_game_mechanics_task(),
@@ -182,7 +226,10 @@ class NeonPoker():
                 self.user_input_task(),
                 self.data_handling_task(),
                 self.responsive_design_task(),
-                self.game_flow_task()
+                self.game_flow_task(),
+                self.image_assets_generation_task(),
+                self.audio_assets_generation_task(),
+                self.asset_integration_task(),
             ],
             process=Process.sequential,
             verbose=True,
