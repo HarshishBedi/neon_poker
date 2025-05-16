@@ -133,3 +133,27 @@ asset_integration:
       • `index.html` and `styles.css` with correct image paths & media queries  
       • A `audioLoader.js` (or similar) that imports and manages all audio assets
   agent: asset_integration
+
+scoring_and_progression:
+  name: "Implement Scoring & Progression"
+  description: >
+    Design and implement Neon Poker's scoring algorithms, progression curves, reward systems, and difficulty scaling.
+  expected_output: >
+    A set of scoring functions and progression rules that produce player scores, progression states, and reward distributions.
+  agent: scoring_and_progression
+
+performance_optimization:
+  name: "Implement Performance Optimization"
+  description: >
+    Optimize Neon Poker's codebase and assets for fast load times, minimal memory footprint, smooth frame rates, and efficient network usage.
+  expected_output: >
+    A performance-optimized build with minified code, compressed assets, lazy-loading implementation, and verified performance metrics.
+  agent: performance_optimization
+
+accessibility_inclusivity:
+  name: "Implement Accessibility & Inclusivity"
+  description: >
+    Integrate features like customizable controls, screen reader compatibility, high-contrast modes, and colorblind accessibility into Neon Poker.
+  expected_output: >
+    Accessible UI components, ARIA labels, configurable control mappings, and validated color-contrast compliance.
+  agent: accessibility_inclusivity
